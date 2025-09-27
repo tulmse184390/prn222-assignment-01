@@ -26,6 +26,12 @@ namespace BLL.Mappings
                 .ForMember(dest => dest.StaffName, opt => opt.MapFrom(src => src.Staff.FullName))
                 .ForMember(dest => dest.ViewOrderDetails, opt => opt.MapFrom(src => src.OrderDetails))
                 .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.OrderDetails.Sum(x => x.FinalPrice)));
+
+            CreateMap<Order, ViewConfirmOrder>()
+                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer.FullName))
+                .ForMember(dest => dest.StaffName, opt => opt.MapFrom(src => src.Staff.FullName))
+                .ForMember(dest => dest.ViewOrderDetails, opt => opt.MapFrom(src => src.OrderDetails))
+                .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.OrderDetails.Sum(x => x.FinalPrice)));
         }
     }
 }

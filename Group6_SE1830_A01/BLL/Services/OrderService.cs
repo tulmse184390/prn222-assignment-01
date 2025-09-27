@@ -37,6 +37,36 @@ namespace BLL.Services
             await _orderRepo.SaveAsync();
         }
 
+        public async Task<int> CreateOrder(CreateOrder createOrder)
+        {
+            var order = new Order
+            {
+                CustomerId = createOrder.CustomerId,
+                StaffId = createOrder.StaffId,
+                OrderDate = DateTime.Now,
+                Status = "Pending",
+            };
+
+            foreach (var item in createOrder.CreateOrderDetails)
+            {
+                order.OrderDetails.Add(new OrderDetail
+                {
+                    VersionId = item.VersionId,
+                    ColorId = item.ColorId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    FinalPrice = item.Quantity * item.UnitPrice
+                });
+            }
+
+            return (await _orderRepo.AddAsync(order)).OrderId;
+        }
+
+        public async Task DeleteOrder(int id)
+        {
+            await _orderRepo.DeleteOrder(id);
+        }
+
         public async Task<ICollection<ViewOrder>> GetAllOrders()
         {
             var orders = await _orderRepo.GetAllOrders();
@@ -63,6 +93,15 @@ namespace BLL.Services
             };
 
             return viewCreateOrder;
+        }
+
+        public async Task<ViewConfirmOrder?> GetOrderById(int id)
+        {
+            var order = await _orderRepo.GetOrderById(id);
+
+            var viewConfirmOrder = _mapper.Map<ViewConfirmOrder>(order);
+
+            return viewConfirmOrder;
         }
     }
 }

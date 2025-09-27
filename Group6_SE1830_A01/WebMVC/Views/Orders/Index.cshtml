@@ -200,21 +200,8 @@
                             🔍
                         </button>
 
-                        <!-- Nút xác nhận & hủy chỉ hiện khi Pending -->
-                        @if (item.Status == "Pending")
-                        {
-                            <form asp-action="ChangeStatus" method="post" class="change-status-form" data-status="Confirmed" style="display:inline;">
-                                <input type="hidden" name="OrderId" value="@item.OrderId" />
-                                <input type="hidden" name="Status" value="Confirmed" />
-                                <button type="submit" class="od-btn od-btn-confirm" title="Xác nhận">✅</button>
-                            </form>
-
-                            <form asp-action="ChangeStatus" method="post" class="change-status-form" data-status="Cancelled" style="display:inline;">
-                                <input type="hidden" name="OrderId" value="@item.OrderId" />
-                                <input type="hidden" name="Status" value="Cancelled" />
-                                <button type="submit" class="od-btn od-btn-cancel" title="Hủy">❌</button>
-                            </form>
-                        }
+                        <a asp-action="Confirm" asp-controller="Orders" asp-route-id="@item.OrderId"
+                           class="od-btn od-btn-confirm" title="Xem & xác nhận">👁</a>
                     </td>
                 </tr>
 
@@ -268,20 +255,4 @@
             row.style.display = "table-row";
         }
     }
-
-        document.addEventListener("DOMContentLoaded", function () {
-        const forms = document.querySelectorAll(".change-status-form");
-        forms.forEach(form => {
-            form.addEventListener("submit", function (e) {
-                const status = form.getAttribute("data-status");
-                let message = status === "Confirmed"
-                    ? "Bạn có chắc chắn muốn xác nhận đơn hàng này không?"
-                    : "Bạn có chắc chắn muốn hủy đơn hàng này không?";
-
-                if (!confirm(message)) {
-                    e.preventDefault(); // chặn submit nếu bấm Cancel
-                }
-            });
-        });
-    });
 </script>

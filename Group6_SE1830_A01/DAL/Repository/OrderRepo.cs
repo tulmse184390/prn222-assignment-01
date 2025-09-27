@@ -13,6 +13,21 @@ namespace DAL.Repository
             _context = context;
         }
 
+        public async Task DeleteOrder(int id)
+        {
+            var order = await _context.Orders
+                              .Include(o => o.OrderDetails)
+                              .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order != null)
+            {
+                _context.OrderDetails.RemoveRange(order.OrderDetails);
+                _context.Orders.Remove(order);
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
         public async Task<ICollection<Order>> GetAllOrders()
         {
             return await _context.Orders
@@ -24,6 +39,18 @@ namespace DAL.Repository
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Color)
                 .ToListAsync();
+        }
+
+        public async Task<Order?> GetOrderById(int id)
+        {
+            return await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.Staff)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Version)
+                .ThenInclude(v => v.Model)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Color).FirstOrDefaultAsync(o => o.OrderId == id);
         }
     }
 }

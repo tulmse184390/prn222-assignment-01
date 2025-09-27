@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BLL.BusinessObjects.ViewConfirmOrder
+@{
     ViewBag.Title = "Xác nhận đơn hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -114,11 +115,11 @@
     <div class="oc-panel">
         <h3>Thông tin chung</h3>
         <div class="oc-info">
-            <p><strong>Mã đơn hàng:</strong> #ORD123</p>
-            <p><strong>Nhân viên:</strong> Nguyễn Văn Staff</p>
-            <p><strong>Khách hàng:</strong> Nguyễn Văn A</p>
-            <p><strong>Ngày tạo:</strong> 26/09/2025</p>
-            <p><strong>Trạng thái:</strong> Pending</p>
+            <p><strong>Mã đơn hàng:</strong> #@Model.OrderId</p>
+            <p><strong>Nhân viên:</strong> @Model.StaffName</p>
+            <p><strong>Khách hàng:</strong> @Model.CustomerName</p>
+            <p><strong>Ngày tạo:</strong> @Model.OrderDate.Value.ToString("dd/MM/yyyy")</p>
+            <p><strong>Trạng thái:</strong> @Model.Status</p>
         </div>
     </div>
 
@@ -136,29 +137,62 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>VF e34</td>
-                    <td>Trắng</td>
-                    <td>1</td>
-                    <td>650,000,000</td>
-                    <td>650,000,000</td>
-                </tr>
-                <tr>
-                    <td>EV Scooter Pro</td>
-                    <td>Đỏ</td>
-                    <td>2</td>
-                    <td>420,000,000</td>
-                    <td>840,000,000</td>
-                </tr>
+                @foreach (var d in Model.ViewOrderDetails)
+                {
+                    <tr>
+                        <td>@d.ModelName - @d.VersionName</td>
+                        <td>@d.ColorName</td>
+                        <td>@d.Quantity</td>
+                        <td>@d.UnitPrice.ToString("N0")</td>
+                        <td>@d.FinalPrice.ToString("N0")</td>
+                    </tr>
+                }
             </tbody>
         </table>
-        <div class="oc-total">Tổng tiền: 1,490,000,000</div>
+        <div class="oc-total">Tổng tiền: @Model.TotalAmount.ToString("N0")</div>
     </div>
 
     <!-- Nút thao tác -->
-    <div class="oc-actions">
-        <a href="@Url.Action("Create", "Contracts", new { orderId = 123 })" class="oc-btn oc-btn-pay">💳 Thanh toán</a>
-        <a href="@Url.Action("Index", "Orders")" class="oc-btn oc-btn-cancel">✖ Hủy</a>
-        <a href="@Url.Action("Edit", "Orders", new { id = 123 })" class="oc-btn oc-btn-edit">✏ Chỉnh sửa</a>
+    @if (Model.Status == "Pending")
+    {
+        <div class="oc-actions">
+        <!-- Nút Thanh toán (Confirm) -->
+            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
+            <input type="hidden" name="OrderId" value="@Model.OrderId" />
+            <input type="hidden" name="Status" value="Confirmed" />
+            <button type="submit" class="oc-btn oc-btn-pay">💳 Thanh toán</button>
+        </form>
+
+        <!-- Nút Hủy -->
+            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
+            <input type="hidden" name="OrderId" value="@Model.OrderId" />
+            <input type="hidden" name="Status" value="Cancelled" />
+            <button type="submit" class="oc-btn oc-btn-cancel">✖ Hủy</button>
+        </form>
+
+            <!-- Nút Xóa -->
+            <form asp-action="Delete" asp-controller="Orders" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
+                <input type="hidden" name="id" value="@Model.OrderId" />
+                <button type="submit" class="oc-btn oc-btn-cancel">🗑 Xóa</button>
+            </form>
     </div>
+    }
 </div>
+
+<script>
+            document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll(".change-status-form");
+        forms.forEach(form => {
+            form.addEventListener("submit", function (e) {
+                const status = form.getAttribute("data-status");
+                let message = status === "Confirmed"
+                    ? "Bạn có chắc chắn muốn xác nhận đơn hàng này không?"
+                    : "Bạn có chắc chắn muốn hủy đơn hàng này không?";
+
+                if (!confirm(message)) {
+                    e.preventDefault(); // chặn submit nếu bấm Cancel
+                }
+            });
+        });
+    });
+</script>

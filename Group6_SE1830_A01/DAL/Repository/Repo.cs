@@ -18,11 +18,16 @@ namespace DAL.Repository
 
         public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
 
-        public async void AddAsync(T entity) => await _dbSet.AddAsync(entity);
+        public async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity; // entity bây giờ đã có ID
+        }
 
         public void Update(T entity) => _dbSet.Update(entity);
 
-        public async void DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity != null)

@@ -1,5 +1,6 @@
 ﻿using BLL.BusinessObjects;
 using BLL.IServices;
+using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -28,9 +29,11 @@ namespace WebMVC.Controllers
             return View(viewCreateOrder);
         }
 
-        public IActionResult Confirm()
+        public async Task<IActionResult> Confirm(int id)
         {
-            return View();
+            var viewConfirmOrder = await _orderService.GetOrderById(id);
+
+            return View(viewConfirmOrder);
         }
 
         [HttpPost]
@@ -39,13 +42,35 @@ namespace WebMVC.Controllers
             try
             {
                 await _orderService.ChangeOrderStatus(model);
-                return RedirectToAction("Index");
+                return RedirectToAction("Confirm", new { id = model.OrderId });
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder(CreateOrder createOrder)
+        {
+            if (createOrder == null || createOrder.CreateOrderDetails == null || !createOrder.CreateOrderDetails.Any())
+            {
+                ModelState.AddModelError("", "Đơn hàng không hợp lệ. Vui lòng chọn ít nhất 1 xe.");
+                var viewCreateOrder = await _orderService.GetInfoForCreateOrder();
+                return View("Create", viewCreateOrder);
+            }
+
+            var orderId = await _orderService.CreateOrder(createOrder);
+
+            return RedirectToAction("Confirm", new { id = orderId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _orderService.DeleteOrder(id); 
+            return RedirectToAction("Index");
         }
     }
 }

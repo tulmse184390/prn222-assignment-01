@@ -187,7 +187,7 @@
     <div>
         <h2 class="co-title">Tạo đơn hàng mới</h2>
 
-        <form class="co-form" onsubmit="return false;">
+        <form class="co-form" method="post" action="@Url.Action("CreateOrder", "Orders")" id="orderForm">
             <!-- Chọn nhân viên -->
             <div class="co-group">
                 <label class="co-label">Nhân viên thực hiện</label>
@@ -228,8 +228,10 @@
             <!-- Tổng tiền -->
             <div class="co-total" id="grandTotal">Tổng tiền: 0</div>
 
+            <input type="hidden" name="OrderItemsJson" id="OrderItemsJson">
+
             <!-- Action buttons -->
-            <a href="@Url.Action("Confirm", "Orders")" class="co-btn co-btn-save">💾 Lưu Order</a>
+            <button type="submit" class="co-btn co-btn-save">💾 Lưu Order</button>
             <a href="@Url.Action("Index", "Orders")" class="co-btn co-btn-cancel">✖ Hủy</a>
         </form>
     </div>
@@ -244,6 +246,8 @@
             @foreach (var car in Model.Inventories)
             {
                 <div class="inv-item"
+                     data-versionid="@car.Version.VersionId"
+                     data-colorid="@car.Color.ColorId"
                      data-version="@car.Version.VersionName"
                      data-name="@car.Version.Model.ModelName - @car.Color.ColorName"
                      data-price="@((car.Version.BasePrice + car.Color.ExtraCost).Value)"
@@ -262,12 +266,14 @@
 </div>
 
 <script>
-        function addFromInventory(btn) {
+            function addFromInventory(btn) {
         const item = btn.closest(".inv-item");
         const name = item.dataset.name;
         const version = item.dataset.version;
         const price = parseInt(item.dataset.price);
         const stock = parseInt(item.dataset.stock);
+        const versionId = item.dataset.versionid;
+        const colorId = item.dataset.colorid;
 
         if (stock <= 0) {
             alert("Hết hàng!");
@@ -280,27 +286,37 @@
         if (row) {
             let qtyInput = row.querySelector(".order-qty");
             let currentQty = parseInt(qtyInput.value);
-            let newQty = Math.min(currentQty + 1, stock); // không vượt quá tồn kho
+            let newQty = Math.min(currentQty + 1, stock);
             qtyInput.value = newQty;
             updateRowTotal(row, price, stock);
         } else {
+            const index = tbody.querySelectorAll("tr").length; // lấy index cho OrderItems[i]
             row = document.createElement("tr");
             row.dataset.name = name;
-            row.dataset.stock = stock; // gắn tồn kho vào row
+            row.dataset.stock = stock;
+
             row.innerHTML = `
                 <td>${name}</td>
                 <td>${version}</td>
                 <td>
                     <input type="number"
                            class="order-qty"
+                           name="CreateOrderDetails[${index}].Quantity"
                            value="1"
                            min="1"
                            max="${stock}"
                            onchange="updateRowTotal(this.closest('tr'), ${price}, ${stock})">
                 </td>
-                <td>${price.toLocaleString()}</td>
+                <td>
+                    ${price.toLocaleString()}
+                    <input type="hidden" name="CreateOrderDetails[${index}].UnitPrice" value="${price}">
+                </td>
                 <td class="row-total">${price.toLocaleString()}</td>
-                <td><button type="button" onclick="removeRow(this, '${name}', ${price})">❌</button></td>
+                <td>
+                    <input type="hidden" name="CreateOrderDetails[${index}].VersionId" value="${versionId}">
+                    <input type="hidden" name="CreateOrderDetails[${index}].ColorId" value="${colorId}">
+                    <button type="button" onclick="removeRow(this)">❌</button>
+                </td>
             `;
             tbody.appendChild(row);
         }
@@ -326,6 +342,7 @@
         const qty = parseInt(row.querySelector(".order-qty").value);
         row.remove();
 
+        reindexOrderItems();
         updateGrandTotal();
     }
 
@@ -335,6 +352,18 @@
             total += parseInt(row.querySelector(".row-total").innerText.replace(/,/g, ""));
         });
         document.getElementById("grandTotal").innerText = "Tổng tiền: " + total.toLocaleString();
+    }
+
+        function reindexOrderItems() {
+        const rows = document.querySelectorAll("#orderTable tbody tr");
+        rows.forEach((row, i) => {
+            row.querySelectorAll("input, select").forEach(input => {
+                if (input.name.startsWith("CreateOrderDetails[")) {
+                    const prop = input.name.substring(input.name.indexOf("].") + 2);
+                    input.name = `CreateOrderDetails[${i}].${prop}`;
+                }
+            });
+        });
     }
 
     // Tìm kiếm
