@@ -1,0 +1,182 @@
+﻿@{
+    Layout = null;
+    var title = ViewBag.Title ?? "Dashboard - Quản lý bán xe điện";
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var currentAction = ViewContext.RouteData.Values["action"].ToString();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #1e293b;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 10px;
+        }
+
+            .sidebar h2 {
+                font-size: 18px;
+                text-align: center;
+                margin: 0 0 20px 0;
+            }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .sidebar-menu li {
+                margin: 6px 0;
+            }
+
+        .sidebar-link {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+            .sidebar-link:hover {
+                background: #334155;
+            }
+
+            .sidebar-link.active {
+                background: #0f172a;
+                font-weight: 600;
+                cursor: default;
+                pointer-events: none; 
+            }
+
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+        }
+
+        .header {
+            background: #fff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .main {
+            flex-grow: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        footer {
+            background: #fff;
+            text-align: center;
+            padding: 8px;
+            border-top: 1px solid #ddd;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-bolt"></i> EV Dealer</h2>
+        <ul class="sidebar-menu">
+            <li>
+                @if (currentController == "Home" && currentAction == "Index")
+                {
+                    <span class="sidebar-link active">🏠 Trang chủ</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Home")" class="sidebar-link">🏠 Trang chủ</a>
+                }
+            </li>
+
+            <li>
+                @if (currentController == "Inventory" && currentAction == "Index")
+                {
+                    <span class="sidebar-link active">📦 Xe tồn kho</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Inventory")" class="sidebar-link">📦 Danh sách xe</a>
+                }
+            </li>
+
+            <li>
+                @if (currentController == "Orders" && currentAction == "Index")
+                {
+                    <span class="sidebar-link active">📝 Đơn hàng</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Orders")" class="sidebar-link">📝 Đơn hàng</a>
+                }
+            </li>
+
+            <li>
+                @if (currentController == "TestDriveAppointments" && currentAction == "Index")
+                {
+                    <span class="sidebar-link active">📅 Lịch hẹn</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "TestDriveAppointments")" class="sidebar-link">📅 Lịch hẹn</a>
+                }
+            </li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="header">
+            <h4>@title</h4>
+            <div>
+                Xin chào, Admin |
+                <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+            </div>
+        </div>
+
+        <div class="main">
+            @RenderBody()
+        </div>
+
+        <footer>
+            &copy; @DateTime.Now.Year - Quản lý bán xe điện qua đại lý
+        </footer>
+    </div>
+</body>
+</html>

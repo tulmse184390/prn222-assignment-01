@@ -1,0 +1,55 @@
+## Build Folders (bin/ and obj/)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider files
+.idea/
+
+## VS Code files
+.vscode/
+
+## NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+!**/packages/build/
+*.snupkg
+
+## Entity Framework
+*.dbmdl
+*.jfm
+
+.idea/.dotCover
+
+*.bak
+*.bkp
+*.tmp
+*.temp
+*.log
+
+publish/
+App_Data/
+
+[Tt]humbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+*.swp
+*.cache
+*.pdb
+*.mdb
+*.exe
+*.dll
+
+appsettings.Development.json
+appsettings.Local.json

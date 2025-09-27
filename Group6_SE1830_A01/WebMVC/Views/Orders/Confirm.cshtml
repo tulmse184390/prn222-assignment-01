@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "Xác nhận đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .oc-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 16px;
+        color: #0f172a;
+    }
+
+    .oc-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+
+    .oc-panel {
+        background: #fff;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 4px 14px rgba(15,23,42,0.06);
+        margin-bottom: 18px;
+    }
+
+        .oc-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+    .oc-info p {
+        margin: 4px 0;
+        font-size: 14px;
+    }
+
+    .oc-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .oc-table th {
+            background: #f1f5f9;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .oc-table td {
+            padding: 8px 10px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+    .oc-total {
+        text-align: right;
+        font-weight: 600;
+        font-size: 15px;
+        margin-top: 12px;
+    }
+
+    .oc-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .oc-btn {
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .oc-btn-pay {
+        background: #16a34a;
+        color: #fff;
+    }
+
+        .oc-btn-pay:hover {
+            background: #15803d;
+        }
+
+    .oc-btn-cancel {
+        background: #dc2626;
+        color: #fff;
+    }
+
+        .oc-btn-cancel:hover {
+            background: #b91c1c;
+        }
+
+    .oc-btn-edit {
+        background: #2563eb;
+        color: #fff;
+    }
+
+        .oc-btn-edit:hover {
+            background: #1d4ed8;
+        }
+</style>
+
+<div class="oc-container">
+    <h2 class="oc-title">Xác nhận đơn hàng</h2>
+
+    <!-- Thông tin chung -->
+    <div class="oc-panel">
+        <h3>Thông tin chung</h3>
+        <div class="oc-info">
+            <p><strong>Mã đơn hàng:</strong> #ORD123</p>
+            <p><strong>Nhân viên:</strong> Nguyễn Văn Staff</p>
+            <p><strong>Khách hàng:</strong> Nguyễn Văn A</p>
+            <p><strong>Ngày tạo:</strong> 26/09/2025</p>
+            <p><strong>Trạng thái:</strong> Pending</p>
+        </div>
+    </div>
+
+    <!-- Chi tiết xe -->
+    <div class="oc-panel">
+        <h3>Chi tiết xe</h3>
+        <table class="oc-table">
+            <thead>
+                <tr>
+                    <th>Xe</th>
+                    <th>Màu</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>VF e34</td>
+                    <td>Trắng</td>
+                    <td>1</td>
+                    <td>650,000,000</td>
+                    <td>650,000,000</td>
+                </tr>
+                <tr>
+                    <td>EV Scooter Pro</td>
+                    <td>Đỏ</td>
+                    <td>2</td>
+                    <td>420,000,000</td>
+                    <td>840,000,000</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="oc-total">Tổng tiền: 1,490,000,000</div>
+    </div>
+
+    <!-- Nút thao tác -->
+    <div class="oc-actions">
+        <a href="@Url.Action("Create", "Contracts", new { orderId = 123 })" class="oc-btn oc-btn-pay">💳 Thanh toán</a>
+        <a href="@Url.Action("Index", "Orders")" class="oc-btn oc-btn-cancel">✖ Hủy</a>
+        <a href="@Url.Action("Edit", "Orders", new { id = 123 })" class="oc-btn oc-btn-edit">✏ Chỉnh sửa</a>
+    </div>
+</div>

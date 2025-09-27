@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Bao ngoài để căn giữa nội dung */
+    .hp-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px;
+        color: #0f172a;
+        box-sizing: border-box;
+    }
+
+    /* Tiêu đề lớn */
+    .hp-hero {
+        margin: 6px 0 18px 0;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    /* Lưới các thẻ thống kê */
+    .hp-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .hp-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-height: 110px;
+    }
+
+    .hp-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: #eef2ff;
+        color: #0b61ff;
+        margin-bottom: 10px;
+    }
+
+    .hp-title {
+        font-size: 13px;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+
+    .hp-value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    /* Hai khối thông báo + báo cáo */
+    .hp-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .hp-panel {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 14px;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    }
+
+        .hp-panel h5 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+    .hp-list {
+        margin: 0;
+        padding-left: 18px;
+        color: #334155;
+    }
+
+    }
+</style>
+
+<div class="hp-container">
+    <h1 class="hp-hero">Chào mừng đến hệ thống quản lý bán xe điện qua đại lý</h1>
+
+    <!-- Thẻ thống kê -->
+    <section class="hp-stats-grid" aria-label="Thống kê nhanh">
+        <div class="hp-card" role="article">
+            <div class="hp-icon" aria-hidden="true">
+                <i class="fa-solid fa-car"></i>
+            </div>
+            <div class="hp-title">Tổng số xe</div>
+            <div class="hp-value">120</div>
+        </div>
+
+        <div class="hp-card" role="article">
+            <div class="hp-icon" aria-hidden="true">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <div class="hp-title">Đại lý</div>
+            <div class="hp-value">15</div>
+        </div>
+
+        <div class="hp-card" role="article">
+            <div class="hp-icon" aria-hidden="true">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="hp-title">Khách hàng</div>
+            <div class="hp-value">350</div>
+        </div>
+
+        <div class="hp-card" role="article">
+            <div class="hp-icon" aria-hidden="true">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div class="hp-title">Doanh thu tháng</div>
+            <div class="hp-value">2.3 tỷ</div>
+        </div>
+    </section>
+
+    <!-- Thông báo & báo cáo -->
+    <section class="hp-two-col" aria-label="Thông báo và báo cáo">
+        <div class="hp-panel">
+            <h5><i class="fa-solid fa-newspaper"></i> Thông báo</h5>
+            <ul class="hp-list">
+                <li>Khai trương đại lý mới tại Hà Nội</li>
+                <li>Thêm 2 mẫu xe điện mới trong tháng</li>
+                <li>Khuyến mãi mùa thu cho khách hàng thân thiết</li>
+            </ul>
+        </div>
+
+        <div class="hp-panel">
+            <h5><i class="fa-solid fa-chart-pie"></i> Báo cáo nhanh</h5>
+            <p style="margin:0 0 6px 0;">- Doanh số tuần này tăng 12% so với tuần trước.</p>
+            <p style="margin:0;">- Xe điện bán chạy nhất: EV Scooter Pro.</p>
+        </div>
+    </section>
+</div>

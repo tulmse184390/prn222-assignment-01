@@ -1,0 +1,95 @@
+﻿@model ICollection<BLL.BusinessObjects.ViewInventory>
+@{
+    ViewBag.Title = "Danh sách xe";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .inv-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px;
+        color: #0f172a;
+        box-sizing: border-box;
+    }
+
+    .inv-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 6px 0 16px 0;
+    }
+
+    .inv-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .inv-table th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .inv-table td {
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .inv-table tr:hover {
+            background: #f9fafb;
+        }
+
+    .inv-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        color: #ffffff;
+        background: #2563eb;
+    }
+
+        .inv-btn:hover {
+            background: #1d4ed8;
+        }
+</style>
+
+<div class="inv-container">
+    <h2 class="inv-title">Danh sách xe</h2>
+    <table class="inv-table">
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Phiên bản</th>
+                <th>Màu</th>
+                <th>Quãng đường (Km)</th>
+                <th>Số chỗ</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ModelName</td>
+                    <td>@item.VersionName</td>
+                    <td>@item.ColorName</td>
+                    <td>@item.RangeKm</td>
+                    <td>@item.Seat</td>
+                    <td>@item.BasePrice</td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

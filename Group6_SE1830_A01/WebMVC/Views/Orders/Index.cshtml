@@ -1,0 +1,287 @@
+﻿@model ICollection<BLL.BusinessObjects.ViewOrder>
+@{
+    ViewBag.Title = "Danh sách đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .od-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px;
+        color: #0f172a;
+    }
+
+    .od-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 6px 0 16px 0;
+    }
+
+    .od-btn-create {
+        display: inline-block;
+        padding: 8px 14px;
+        margin-bottom: 14px;
+        background: #2563eb;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+        .od-btn-create:hover {
+            background: #1d4ed8;
+        }
+
+    .od-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+        .od-table th {
+            background: #f1f5f9;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .od-table td {
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .od-table tr:hover {
+            background: #f9fafb;
+        }
+
+    .od-btn-detail {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        text-decoration: none;
+        background: #16a34a;
+        color: #fff;
+        font-weight: 500;
+    }
+
+        .od-btn-detail:hover {
+            background: #15803d;
+        }
+
+    /* OrderDetail bảng con */
+    .odd-box {
+        margin: 12px 0 20px 0;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .odd-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .odd-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+        .odd-table th {
+            background: #e2e8f0;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .odd-table td {
+            padding: 8px 10px;
+            border-top: 1px solid #cbd5e1;
+            font-size: 13px;
+        }
+
+        .odd-table tr:hover {
+            background: #f1f5f9;
+        }
+
+    .od-actions {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* Nút nhỏ gọn chung */
+    .od-btn {
+        border: none;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 14px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+        .od-btn:hover {
+            background: #cbd5e1;
+        }
+
+    /* Riêng từng loại */
+    .od-btn-detail {
+        background: #f3f4f6;
+    }
+
+    .od-btn-confirm {
+        background: #22c55e;
+        color: white;
+    }
+
+        .od-btn-confirm:hover {
+            background: #16a34a;
+        }
+
+    .od-btn-cancel {
+        background: #ef4444;
+        color: white;
+    }
+
+        .od-btn-cancel:hover {
+            background: #dc2626;
+        }
+
+</style>
+
+<div class="od-container">
+    <h2 class="od-title">Danh sách đơn hàng</h2>
+
+    <!-- Nút tạo order mới -->
+    <a href="@Url.Action("Create", "Orders")" class="od-btn-create">+ Tạo Order mới</a>
+
+    <!-- Bảng danh sách orders -->
+    <table class="od-table">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Nhân viên</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+                <th>Tổng tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var detailId = $"detail-{item.OrderId}";
+                <tr>
+                    <td>@item.OrderId</td>
+                    <td>@item.CustomerName</td>
+                    <td>@item.StaffName</td>
+                    <td>@item.OrderDate.Value.ToString("dd/MM/yyyy")</td>
+                    <td>@item.Status</td>
+                    <td>@item.TotalAmount.ToString("N0") ₫</td>
+                    <td class="od-actions">
+                        <!-- Nút xem chi tiết -->
+                        <button type="button" class="od-btn od-btn-detail" onclick="toggleDetail('detail-@item.OrderId')" title="Xem chi tiết">
+                            🔍
+                        </button>
+
+                        <!-- Nút xác nhận & hủy chỉ hiện khi Pending -->
+                        @if (item.Status == "Pending")
+                        {
+                            <form asp-action="ChangeStatus" method="post" class="change-status-form" data-status="Confirmed" style="display:inline;">
+                                <input type="hidden" name="OrderId" value="@item.OrderId" />
+                                <input type="hidden" name="Status" value="Confirmed" />
+                                <button type="submit" class="od-btn od-btn-confirm" title="Xác nhận">✅</button>
+                            </form>
+
+                            <form asp-action="ChangeStatus" method="post" class="change-status-form" data-status="Cancelled" style="display:inline;">
+                                <input type="hidden" name="OrderId" value="@item.OrderId" />
+                                <input type="hidden" name="Status" value="Cancelled" />
+                                <button type="submit" class="od-btn od-btn-cancel" title="Hủy">❌</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+
+                <!-- Hàng chi tiết ẩn -->
+                <tr id="@detailId" class="odd-box" style="display:none;">
+                    <td colspan="7">
+                        <div class="odd-title">Chi tiết đơn hàng @item.OrderId</div>
+                        <table class="odd-table">
+                            <thead>
+                                <tr>
+                                    <th>Phiên bản</th>
+                                    <th>Màu</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Giảm giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in item.ViewOrderDetails)
+                                {
+                                    <tr>
+                                        <td>@d.VersionName</td>
+                                        <td>@d.ColorName</td>
+                                        <td>@d.Quantity</td>
+                                        <td>@d.UnitPrice.ToString("N0") ₫</td>
+                                        <td>@d.Discount.Value.ToString("N0") ₫</td>
+                                        <td>@d.FinalPrice.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function toggleDetail(id) {
+        // Ẩn tất cả chi tiết trước
+        var allDetails = document.querySelectorAll(".odd-box");
+        allDetails.forEach(function (row) {
+            row.style.display = "none";
+        });
+
+        // Hiện chi tiết tương ứng
+        var row = document.getElementById(id);
+        if (row) {
+            row.style.display = "table-row";
+        }
+    }
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const forms = document.querySelectorAll(".change-status-form");
+        forms.forEach(form => {
+            form.addEventListener("submit", function (e) {
+                const status = form.getAttribute("data-status");
+                let message = status === "Confirmed"
+                    ? "Bạn có chắc chắn muốn xác nhận đơn hàng này không?"
+                    : "Bạn có chắc chắn muốn hủy đơn hàng này không?";
+
+                if (!confirm(message)) {
+                    e.preventDefault(); // chặn submit nếu bấm Cancel
+                }
+            });
+        });
+    });
+</script>
