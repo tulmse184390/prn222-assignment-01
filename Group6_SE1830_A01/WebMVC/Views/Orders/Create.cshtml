@@ -243,7 +243,11 @@
         <div class="inv-list" id="invList">
             @foreach (var car in Model.Inventories)
             {
-                <div class="inv-item" data-version="@car.Version.VersionName" data-name="@car.Version.Model.ModelName - @car.Color.ColorName" data-price="@((car.Version.BasePrice + car.Color.ExtraCost).Value)">
+                <div class="inv-item"
+                     data-version="@car.Version.VersionName"
+                     data-name="@car.Version.Model.ModelName - @car.Color.ColorName"
+                     data-price="@((car.Version.BasePrice + car.Color.ExtraCost).Value)"
+                     data-stock="@car.Quantity">
                     <div class="inv-info">
                         <h4>@car.Version.Model.ModelName - @car.Color.ColorName</h4>
                         <p>Phiên bản: @car.Version.VersionName</p>
@@ -263,9 +267,9 @@
         const name = item.dataset.name;
         const version = item.dataset.version;
         const price = parseInt(item.dataset.price);
-        let quantityLeft = parseInt(item.querySelector("p:nth-child(4)").innerText.match(/\d+/)[0]);
+        const stock = parseInt(item.dataset.stock);
 
-        if (quantityLeft <= 0) {
+        if (stock <= 0) {
             alert("Hết hàng!");
             return;
         }
@@ -274,18 +278,26 @@
         let row = [...tbody.querySelectorAll("tr")].find(r => r.dataset.name === name);
 
         if (row) {
-            // Nếu xe đã tồn tại trong bảng thì tăng số lượng
             let qtyInput = row.querySelector(".order-qty");
-            qtyInput.value = parseInt(qtyInput.value) + 1;
-            updateRowTotal(row, price);
+            let currentQty = parseInt(qtyInput.value);
+            let newQty = Math.min(currentQty + 1, stock); // không vượt quá tồn kho
+            qtyInput.value = newQty;
+            updateRowTotal(row, price, stock);
         } else {
-            // Thêm dòng mới
             row = document.createElement("tr");
             row.dataset.name = name;
+            row.dataset.stock = stock; // gắn tồn kho vào row
             row.innerHTML = `
                 <td>${name}</td>
                 <td>${version}</td>
-                <td><input type="number" class="order-qty" value="1" min="1" onchange="updateRowTotal(this.closest('tr'), ${price})"></td>
+                <td>
+                    <input type="number"
+                           class="order-qty"
+                           value="1"
+                           min="1"
+                           max="${stock}"
+                           onchange="updateRowTotal(this.closest('tr'), ${price}, ${stock})">
+                </td>
                 <td>${price.toLocaleString()}</td>
                 <td class="row-total">${price.toLocaleString()}</td>
                 <td><button type="button" onclick="removeRow(this, '${name}', ${price})">❌</button></td>
@@ -293,18 +305,18 @@
             tbody.appendChild(row);
         }
 
-        // Giảm số lượng tồn kho
-        quantityLeft -= 1;
-        item.querySelector("p:nth-child(4)").innerText = `Còn: ${quantityLeft} chiếc`;
-        if (quantityLeft <= 0) {
-            btn.disabled = true;
-        }
-
         updateGrandTotal();
     }
 
-    function updateRowTotal(row, price) {
-        let qty = parseInt(row.querySelector(".order-qty").value);
+        function updateRowTotal(row, price, stock) {
+        let qtyInput = row.querySelector(".order-qty");
+        let qty = parseInt(qtyInput.value);
+
+        // ép số lượng hợp lệ
+        if (isNaN(qty) || qty < 1) qty = 1;
+        if (qty > stock) qty = stock;
+
+        qtyInput.value = qty;
         row.querySelector(".row-total").innerText = (qty * price).toLocaleString();
         updateGrandTotal();
     }
@@ -313,18 +325,6 @@
         const row = btn.closest("tr");
         const qty = parseInt(row.querySelector(".order-qty").value);
         row.remove();
-
-        // Tìm lại item trong inventory để cộng lại tồn kho
-        const item = [...document.querySelectorAll(".inv-item")].find(i => i.dataset.name === name);
-        if (item) {
-            let p = item.querySelector("p:nth-child(3)");
-            let quantityLeft = parseInt(p.innerText.match(/\d+/)[0]);
-            quantityLeft += qty;
-            p.innerText = `Còn: ${quantityLeft} chiếc`;
-
-            // Enable lại nút nếu trước đó disable
-            item.querySelector("button").disabled = false;
-        }
 
         updateGrandTotal();
     }
