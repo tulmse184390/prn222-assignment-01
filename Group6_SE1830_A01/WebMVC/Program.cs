@@ -20,9 +20,11 @@ builder.Services.AddScoped<IInventoryRepo, InventoryRepo>();
 builder.Services.AddScoped<IOrderRepo, OrderRepo>();
 builder.Services.AddScoped<IStaffRepo, StaffRepo>();
 builder.Services.AddScoped<ICustomerRepo, CustomerRepo>();
+builder.Services.AddScoped<ITestDriveAppointmentRepo, TestDriveAppointmentRepo>();
 
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ITestDriveAppointmentService, TestDriveAppointmentService>();
 
 var app = builder.Build();
 

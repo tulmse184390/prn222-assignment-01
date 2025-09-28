@@ -12,5 +12,14 @@ namespace DAL.Repository
         {
             _context = context;
         }
+
+        public async Task<ICollection<TestDriveAppointment>> GetAllApointments()
+        {
+            return await _context.TestDriveAppointments
+                .Include(t => t.Customer)
+                .Include(t => t.CarVersion)
+                .Include(t => t.Color)
+                .ToListAsync();
+        }
     }
 }

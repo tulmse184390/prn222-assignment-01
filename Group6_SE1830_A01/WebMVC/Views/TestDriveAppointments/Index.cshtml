@@ -1,35 +1,153 @@
-﻿@{
-    ViewBag.Title = "Lịch hẹn";
+﻿@model IEnumerable<BLL.BusinessObjects.ViewTestDriveAppointment>
+@{
+    ViewBag.Title = "Quản lý lịch hẹn lái thử";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Lấy tham số month, year từ query
+    var now = DateTime.Now;
+    int month = Context.Request.Query["month"].Count > 0 ? int.Parse(Context.Request.Query["month"]) : now.Month;
+    int year = Context.Request.Query["year"].Count > 0 ? int.Parse(Context.Request.Query["year"]) : now.Year;
+
+    var firstDay = new DateTime(year, month, 1);
+    var daysInMonth = DateTime.DaysInMonth(year, month);
+    var startDayOfWeek = (int)firstDay.DayOfWeek;
+    if (startDayOfWeek == 0) startDayOfWeek = 7; // Chủ nhật = 7
+
+    var appointments = Model ?? Enumerable.Empty<BLL.BusinessObjects.ViewTestDriveAppointment>();
+
+    // Tính tháng trước và tháng sau
+    var prevMonth = firstDay.AddMonths(-1);
+    var nextMonth = firstDay.AddMonths(1);
 }
 
+<div class="oc-container">
+    <div class="header-row">
+        <h2 class="oc-title">📅 Quản lý lịch hẹn lái thử</h2>
+        <a href="@Url.Action("Create", "TestDriveAppointments")" class="btn-create">➕ Tạo lịch hẹn</a>
+    </div>
+
+    <div class="calendar-wrapper">
+        <!-- Lịch -->
+        <div class="calendar-box">
+            <div class="calendar-header">
+                <a class="btn-nav" href="?month=@prevMonth.Month&year=@prevMonth.Year">←</a>
+                <span>@firstDay.ToString("MMMM yyyy")</span>
+                <a class="btn-nav" href="?month=@nextMonth.Month&year=@nextMonth.Year">→</a>
+            </div>
+            <div class="calendar-grid">
+                <div class="day-name">T2</div>
+                <div class="day-name">T3</div>
+                <div class="day-name">T4</div>
+                <div class="day-name">T5</div>
+                <div class="day-name">T6</div>
+                <div class="day-name">T7</div>
+                <div class="day-name">CN</div>
+
+                @for (int i = 1; i < startDayOfWeek; i++)
+                {
+                    <div class="day empty"></div>
+                }
+
+                @for (int day = 1; day <= daysInMonth; day++)
+                {
+                    var currentDate = new DateTime(year, month, day);
+                    var dayEvents = appointments.Where(x => x.DateTime.Date == currentDate.Date).ToList();
+
+                    <div class="day @(currentDate.Date == now.Date ? "today" : "")">
+                        <div class="day-number">@day</div>
+
+                        @if (dayEvents.Any())
+                        {
+                            <ul class="event-list">
+                                @foreach (var ev in dayEvents.Take(2))
+                                {
+                                    <li>@ev.CustomerName</li>
+                                }
+                                @if (dayEvents.Count > 2)
+                                {
+                                    <li>+@((dayEvents.Count - 2)) hẹn</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Danh sách hẹn -->
+        <div class="list-box">
+            <h4>📝 Cuộc hẹn sắp tới</h4>
+            <table class="table-appointments">
+                <thead>
+                    <tr>
+                        <th>Khách</th>
+                        <th>Xe</th>
+                        <th>Ngày giờ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in appointments.OrderBy(x => x.DateTime).Take(10))
+                    {
+                        <tr>
+                            <td>@item.CustomerName</td>
+                            <td>@item.VersionName</td>
+                            <td>@item.DateTime.ToString("dd/MM HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
 <style>
-    .page-header {
+    .oc-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .oc-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
 
     .btn-create {
-        padding: 6px 12px;
-        border: none;
-        background: #007bff;
-        color: #fff;
-        border-radius: 4px;
-        cursor: pointer;
+        background: #3b82f6;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
     }
 
-    .appointments-container {
+        .btn-create:hover {
+            background: #2563eb;
+        }
+
+    /* Flex chia 2 cột */
+    .calendar-wrapper {
         display: flex;
         gap: 20px;
     }
 
-    /* Calendar */
-    .calendar {
+    /* Lịch bên trái */
+    .calendar-box {
         flex: 2;
-        border: 1px solid #ddd;
-        border-radius: 6px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         padding: 10px;
     }
 
@@ -38,6 +156,16 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .btn-nav {
+        padding: 4px 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        text-decoration: none;
+        background: #f8fafc;
     }
 
     .calendar-grid {
@@ -46,140 +174,67 @@
         gap: 4px;
     }
 
-    .day {
-        text-align: center;
+    .day-name {
         font-weight: bold;
-        padding: 6px;
-        background: #f4f4f4;
-        border-radius: 4px;
-    }
-
-    .date-cell {
-        min-height: 60px;
-        border: 1px solid #eee;
-        padding: 4px;
-        font-size: 14px;
-        position: relative;
-    }
-
-        .date-cell.has-event {
-            background: #e9f5ff;
-            border-color: #007bff;
-        }
-
-    .event {
-        display: block;
-        font-size: 12px;
-        color: #007bff;
-        margin-top: 4px;
-    }
-
-    /* Upcoming list */
-    .upcoming {
-        flex: 1;
-        border: 1px solid #ddd;
+        text-align: center;
+        padding: 5px;
+        background: #f1f5f9;
         border-radius: 6px;
-        padding: 10px;
-        background: #fafafa;
     }
 
-        .upcoming h3 {
-            margin-bottom: 10px;
+    .day {
+        min-height: 90px;
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 4px;
+    }
+
+        .day.today {
+            border: 2px solid #3b82f6;
         }
 
-        .upcoming ul {
-            list-style: none;
-            padding: 0;
-        }
+    .day-number {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
 
-        .upcoming li {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-    .btn-detail {
-        float: right;
-        padding: 2px 6px;
+    .event-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
         font-size: 12px;
-        border: 1px solid #007bff;
-        background: #fff;
-        color: #007bff;
-        border-radius: 3px;
-        cursor: pointer;
     }
+
+        .event-list li {
+            background: #e0f2fe;
+            margin-bottom: 2px;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+    /* Danh sách bên phải */
+    .list-box {
+        flex: 1;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 10px;
+        overflow-y: auto;
+        max-height: 600px;
+    }
+
+    .table-appointments {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .table-appointments th,
+        .table-appointments td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 6px;
+            text-align: left;
+        }
+
 </style>
-
-<div class="page-header">
-    <h2>Quản lý lịch hẹn lái thử</h2>
-    <button class="btn-create">+ Tạo lịch hẹn</button>
-</div>
-
-<div class="appointments-container">
-    <!-- Calendar -->
-    <div class="calendar">
-        <div class="calendar-header">
-            <button>&lt;</button>
-            <span>Tháng 9 / 2025</span>
-            <button>&gt;</button>
-        </div>
-
-        <div class="calendar-grid">
-            <!-- Header -->
-            <div class="day">T2</div>
-            <div class="day">T3</div>
-            <div class="day">T4</div>
-            <div class="day">T5</div>
-            <div class="day">T6</div>
-            <div class="day">T7</div>
-            <div class="day">CN</div>
-
-            <!-- Ngày thường -->
-            <div class="date-cell">1</div>
-            <div class="date-cell">2</div>
-
-            <!-- Ngày có sự kiện -->
-            <div class="date-cell has-event">
-                3
-                <div class="event-dot"></div>
-                <div class="event-tooltip">
-                    <strong>09:00 - A. Nam</strong><br>
-                    Xe: VinFast VF8 (Đỏ)<br>
-                    Trạng thái: Confirmed
-                </div>
-            </div>
-
-            <div class="date-cell">4</div>
-
-            <div class="date-cell has-event">
-                5
-                <div class="event-dot"></div>
-                <div class="event-tooltip">
-                    <strong>14:00 - C. Hoa</strong><br>
-                    Xe: VinFast VF9 (Trắng)<br>
-                    Trạng thái: Pending
-                </div>
-            </div>
-
-            <div class="date-cell">6</div>
-            <div class="date-cell">7</div>
-        </div>
-    </div>
-
-    <!-- Upcoming Appointments -->
-    <div class="upcoming">
-        <h3>Lịch hẹn sắp diễn ra</h3>
-        <ul>
-            <li>
-                <span class="time">26/09 09:00</span> -
-                <span class="customer">A. Nam</span> - VinFast VF8 (Đỏ)
-                <button class="btn-detail">Chi tiết</button>
-            </li>
-            <li>
-                <span class="time">26/09 14:00</span> -
-                <span class="customer">C. Hoa</span> - VinFast VF9 (Trắng)
-                <button class="btn-detail">Chi tiết</button>
-            </li>
-        </ul>
-    </div>
-</div>
