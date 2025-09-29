@@ -103,5 +103,10 @@ namespace BLL.Services
 
             return viewConfirmOrder;
         }
+
+        public async Task<decimal> GetRevenue()
+        {
+            return await _orderRepo.GetRevenue();
+        }
     }
 }

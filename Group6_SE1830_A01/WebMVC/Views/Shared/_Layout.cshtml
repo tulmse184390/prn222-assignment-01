@@ -128,7 +128,7 @@
             <li>
                 @if (currentController == "Inventory" && currentAction == "Index")
                 {
-                    <span class="sidebar-link active">📦 Xe tồn kho</span>
+                    <span class="sidebar-link active">📦 Danh sách xe</span>
                 }
                 else
                 {
@@ -157,6 +157,17 @@
                     <a href="@Url.Action("Index", "TestDriveAppointments")" class="sidebar-link">📅 Lịch hẹn</a>
                 }
             </li>
+
+            <li>
+                @if (currentController == "Customers" && currentAction == "Index")
+                {
+                    <span class="sidebar-link active">👤 Khách hàng</span>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "Customers")" class="sidebar-link">👤 Khách hàng</a>
+                }
+            </li>
         </ul>
     </div>
 
@@ -178,5 +189,7 @@
             &copy; @DateTime.Now.Year - Quản lý bán xe điện qua đại lý
         </footer>
     </div>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

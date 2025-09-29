@@ -1,0 +1,159 @@
+﻿@model BLL.BusinessObjects.ViewCustomerCreate
+@{
+    ViewBag.Title = "Thêm khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .cus-create-container * {
+        box-sizing: border-box;
+    }
+
+    .cus-create-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        color: #0f172a;
+    }
+
+    .cus-create-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #1e293b;
+    }
+
+    .cus-form-group {
+        margin-bottom: 14px;
+    }
+
+        .cus-form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        .cus-form-group input,
+        .cus-form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+            .cus-form-group input:focus,
+            .cus-form-group textarea:focus {
+                border-color: #2563eb;
+            }
+
+    .cus-btn-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .cus-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        font-weight: 500;
+    }
+
+    .cus-btn-save {
+        background: #2563eb;
+        color: white;
+    }
+
+        .cus-btn-save:hover {
+            background: #1d4ed8;
+        }
+
+    .cus-btn-cancel {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+        .cus-btn-cancel:hover {
+            background: #cbd5e1;
+        }
+
+    /* Validation message */
+    .text-danger {
+        font-size: 13px;
+        color: #dc2626;
+        margin-top: 4px;
+        display: block;
+    }
+</style>
+
+<div class="cus-create-container">
+    <h2 class="cus-create-title">➕ Thêm khách hàng</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="cus-form-group">
+            <label for="FullName">Họ và tên *</label>
+            <input asp-for="FullName" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Phone">Số điện thoại *</label>
+            <input asp-for="Phone" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Email">Email *</label>
+            <input asp-for="Email" type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Address">Địa chỉ</label>
+            <input asp-for="Address" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Idnumber">CMND/CCCD</label>
+            <input asp-for="Idnumber" />
+            <span asp-validation-for="Idnumber" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Dob">Ngày sinh</label>
+            <input asp-for="Dob" type="date"
+                   max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="Dob" class="text-danger"></span>
+        </div>
+
+        <div class="cus-form-group">
+            <label for="Note">Ghi chú</label>
+            <textarea asp-for="Note" rows="3"></textarea>
+            <span asp-validation-for="Note" class="text-danger"></span>
+        </div>
+
+        <div class="cus-btn-row">
+            <button type="submit" class="cus-btn cus-btn-save">💾 Lưu</button>
+            <a asp-action="Index" class="cus-btn cus-btn-cancel">↩ Hủy</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

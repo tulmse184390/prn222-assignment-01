@@ -17,6 +17,9 @@
         font-size: 22px;
         font-weight: 600;
         margin: 6px 0 16px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .inv-table {
@@ -41,6 +44,7 @@
             border-top: 1px solid #e2e8f0;
             font-size: 14px;
             color: #334155;
+            vertical-align: middle;
         }
 
         .inv-table tr:hover {
@@ -49,47 +53,70 @@
 
     .inv-btn {
         display: inline-block;
-        padding: 6px 12px;
+        padding: 8px 16px;
         border-radius: 6px;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         text-decoration: none;
         color: #ffffff;
         background: #2563eb;
+        cursor: pointer;
+        border: none;
+        margin-top: 14px;
     }
 
         .inv-btn:hover {
             background: #1d4ed8;
         }
+
+    .qty-input {
+        width: 80px;
+        padding: 5px;
+        font-size: 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        text-align: center;
+    }
 </style>
 
 <div class="inv-container">
-    <h2 class="inv-title">Danh sách xe</h2>
-    <table class="inv-table">
-        <thead>
-            <tr>
-                <th>Model</th>
-                <th>Phiên bản</th>
-                <th>Màu</th>
-                <th>Quãng đường (Km)</th>
-                <th>Số chỗ</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <h2 class="inv-title">
+        Danh sách xe
+    </h2>
+
+    <form asp-action="UpdateAllQuantities" asp-controller="Inventory" method="post">
+        <table class="inv-table">
+            <thead>
                 <tr>
-                    <td>@item.ModelName</td>
-                    <td>@item.VersionName</td>
-                    <td>@item.ColorName</td>
-                    <td>@item.RangeKm</td>
-                    <td>@item.Seat</td>
-                    <td>@item.BasePrice</td>
-                    <td>@item.Quantity</td>
+                    <th>Model</th>
+                    <th>Phiên bản</th>
+                    <th>Màu</th>
+                    <th>Quãng đường (Km)</th>
+                    <th>Số chỗ</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var item = Model.ElementAt(i);
+                    <tr>
+                        <td>@item.ModelName</td>
+                        <td>@item.VersionName</td>
+                        <td>@item.ColorName</td>
+                        <td>@item.RangeKm</td>
+                        <td>@item.Seat</td>
+                        <td>@item.BasePrice.ToString("N0") ₫</td>
+                        <td>
+                            <input type="hidden" name="updates[@i].InvetoryId" value="@item.InventoryId" />
+                            <input type="number" name="updates[@i].Quantity" min="0" value="@item.Quantity" class="qty-input" oninput="if(this.value<0) this.value=0;" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="inv-btn">💾 Lưu tất cả</button>
+    </form>
 </div>

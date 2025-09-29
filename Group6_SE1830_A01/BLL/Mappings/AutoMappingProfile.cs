@@ -39,6 +39,12 @@ namespace BLL.Mappings
                 .ForMember(dest => dest.ColorName, opt => opt.MapFrom(src => src.Color.ColorName));
 
             CreateMap<CreateTestDriveAppointment, TestDriveAppointment>();
+
+            CreateMap<Customer, ViewCustomer>();
+
+            CreateMap<ViewCustomerCreate, Customer>();
+
+            CreateMap<ViewCustomerEdit, Customer>();
         }
     }
 }

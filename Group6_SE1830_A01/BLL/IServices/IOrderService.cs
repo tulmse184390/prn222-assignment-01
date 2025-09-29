@@ -11,5 +11,6 @@ namespace BLL.IServices
         Task<int> CreateOrder(CreateOrder createOrder);
         Task<ViewConfirmOrder?> GetOrderById(int id);
         Task DeleteOrder(int id);
+        Task<decimal> GetRevenue();
     }
 }

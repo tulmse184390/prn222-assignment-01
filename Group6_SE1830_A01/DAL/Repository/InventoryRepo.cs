@@ -21,5 +21,10 @@ namespace DAL.Repository
                 .ThenInclude(v => v.Model)  
                 .ToListAsync();
         }
+
+        public async Task<int> GetTotalQuantity()
+        {
+            return await _context.Inventories.SumAsync(i => i.Quantity ?? 0);
+        }
     }
 }

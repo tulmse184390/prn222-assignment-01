@@ -23,5 +23,23 @@ namespace BLL.Services
 
             return _mapper.Map<ICollection<ViewInventory>>(inventory);
         }
+
+        public async Task<int> GetTotalInventory()
+        {
+            return await _inventoryRepo.GetTotalQuantity();
+        }
+
+        public async Task UpdateAllQuantities(List<UpdateInventoryQuantity> updates)
+        {
+            foreach (var update in updates)
+            {
+                var item = await _inventoryRepo.GetByIdAsync(update.InvetoryId);
+                if (item != null)
+                {
+                    item.Quantity = update.Quantity < 0 ? 0 : update.Quantity;
+                }
+                await _inventoryRepo.SaveAsync();
+            }
+        }
     }
 }

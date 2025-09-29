@@ -7,5 +7,6 @@ namespace DAL.IRepository
         Task<ICollection<Order>> GetAllOrders();
         Task<Order?> GetOrderById(int id);
         Task DeleteOrder(int id);
+        Task<decimal> GetRevenue();
     }
 }

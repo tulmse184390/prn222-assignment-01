@@ -1,0 +1,363 @@
+﻿@model ICollection<BLL.BusinessObjects.ViewCustomer>
+@{
+    ViewBag.Title = "Danh sách khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .cus-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px;
+        color: #0f172a;
+    }
+
+    .cus-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 6px 0 16px 0;
+    }
+
+    .cus-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .cus-table th {
+            background: #f1f5f9;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .cus-table td {
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .cus-table tr:hover {
+            background: #f9fafb;
+        }
+
+    .cus-actions {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* Nút chung */
+    .cus-btn {
+        border: none;
+        background: #e2e8f0;
+        color: #334155;
+        font-size: 14px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+        .cus-btn:hover {
+            background: #cbd5e1;
+        }
+
+    .cus-btn-detail {
+        background: #16a34a;
+        color: white;
+    }
+
+        .cus-btn-detail:hover {
+            background: #15803d;
+        }
+
+    /* Box chứa order */
+    .co-box {
+        margin: 12px 0 20px 0;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .co-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .co-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+        .co-table th {
+            background: #e2e8f0;
+            padding: 8px 10px;
+            text-align: left;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .co-table td {
+            padding: 8px 10px;
+            border-top: 1px solid #cbd5e1;
+            font-size: 13px;
+        }
+
+        .co-table tr:hover {
+            background: #f1f5f9;
+        }
+
+    .cus-header {
+        display: flex;
+        justify-content: space-between; /* Tiêu đề bên trái, nút bên phải */
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .cus-btn-add {
+        background: #2563eb;
+        color: white;
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+
+        .cus-btn-add:hover {
+            background: #1d4ed8;
+        }
+
+    .edit-form {
+        padding: 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .edit-row {
+        margin-bottom: 8px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+        .edit-row label {
+            width: 100px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .edit-row input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+    .edit-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .cus-btn-save {
+        background: #16a34a;
+        color: white;
+    }
+
+        .cus-btn-save:hover {
+            background: #15803d;
+        }
+
+    .cus-btn-cancel {
+        background: #94a3b8;
+        color: white;
+    }
+
+        .cus-btn-cancel:hover {
+            background: #64748b;
+        }
+
+    .edit-row textarea {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+        resize: vertical; /* cho phép kéo giãn chiều cao */
+    }
+</style>
+
+<div class="cus-container">
+    <div class="cus-header">
+        <h2 class="cus-title">Danh sách khách hàng</h2>
+        <a asp-action="Create" asp-controller="Customers" class="cus-btn cus-btn-add">+ Thêm khách hàng</a>
+    </div>
+
+    <table class="cus-table">
+        <thead>
+            <tr>
+                <th>Mã KH</th>
+                <th>Tên KH</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>CMND/CCCD</th>
+                <th>Ngày sinh</th>
+                <th>Ghi chú</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div style="color: red; margin-bottom: 10px;">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div style="color: green; margin-bottom: 10px;">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @foreach (var c in Model)
+            {
+                var ordersId = $"orders-{c.CustomerId}";
+                var editId = $"edit-{c.CustomerId}";
+
+                <tr>
+                    <td>@c.CustomerId</td>
+                    <td>@c.FullName</td>
+                    <td>@c.Email</td>
+                    <td>@c.Phone</td>
+                    <td>@c.Address</td>
+                    <td>@c.Idnumber</td>
+                    <td>@(c.Dob.HasValue? c.Dob.Value.ToString("dd/MM/yyyy") : "")</td>
+                    <td>@c.Note</td>
+                    <td class="cus-actions">
+                        <!-- Xem order -->
+                        <button type="button" class="cus-btn" onclick="toggleOrders('@ordersId')" title="Xem orders">📦</button>
+
+                        <!-- Chỉnh sửa -->
+                        <button type="button" class="cus-btn cus-btn-edit" onclick="toggleRow('@editId')" title="Chỉnh sửa">✏️</button>
+
+                        <!-- Xóa -->
+                        <form asp-action="Delete" asp-controller="Customers" asp-route-id="@c.CustomerId"
+                              method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này không?');">
+                            <button type="submit" class="cus-btn cus-btn-delete" title="Xóa">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- Hàng chứa form chỉnh sửa -->
+                <tr id="@editId" style="display:none;">
+                    <td colspan="9">
+                        <form asp-action="Edit" asp-controller="Customers" method="post" class="edit-form">
+                            <input type="hidden" name="CustomerId" value="@c.CustomerId" />
+
+                            <div class="edit-row">
+                                <label>Họ tên:</label>
+                                <input type="text" name="FullName" value="@c.FullName" required />
+                            </div>
+                            <div class="edit-row">
+                                <label>Email:</label>
+                                <input type="email" name="Email" value="@c.Email" />
+                            </div>
+                            <div class="edit-row">
+                                <label>Số điện thoại:</label>
+                                <input type="text" name="Phone" value="@c.Phone" />
+                            </div>
+                            <div class="edit-row">
+                                <label>Địa chỉ:</label>
+                                <input type="text" name="Address" value="@c.Address" />
+                            </div>
+
+                            <div class="edit-row">
+                                <label>CMND/CCCD:</label>
+                                <input type="text" name="Idnumber" value="@c.Idnumber" />
+                            </div>
+                            <div class="edit-row">
+                                <label>Ngày sinh:</label>
+                                <input type="date" name="Dob" value="@(c.Dob.HasValue? c.Dob.Value.ToString("yyyy-MM-dd") : "")" />
+                            </div>
+                            <div class="edit-row">
+                                <label>Ghi chú:</label>
+                                <textarea name="Note" rows="3">@c.Note</textarea>
+                            </div>
+
+                            <div class="edit-actions">
+                                <button type="submit" class="cus-btn cus-btn-save">💾 Lưu</button>
+                                <button type="button" class="cus-btn cus-btn-cancel" onclick="toggleRow('@editId')">❌ Hủy</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- Hàng chứa order -->
+                <tr id="@ordersId" class="co-box" style="display:none;">
+                    <td colspan="6">
+                        <div class="co-title">Danh sách đơn hàng của @c.FullName</div>
+                        <table class="co-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Trạng thái</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var o in c.Orders)
+                                {
+                                    <tr>
+                                        <td>@o.OrderId</td>
+                                        <td>@o.OrderDate.Value.ToString("dd/MM/yyyy")</td>
+                                        <td>@o.Status</td>
+                                        <td>@o.OrderDetails.Sum(od => od.FinalPrice).ToString("N0") ₫</td>
+                                        <td>
+                                            <a asp-action="Confirm" asp-controller="Orders" asp-route-id="@o.OrderId"
+                                               class="cus-btn cus-btn-detail" title="Xem chi tiết">🔍</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function toggleOrders(id) {
+        var row = document.getElementById(id);
+        if (row) {
+            row.style.display = (row.style.display === "none" || row.style.display === "")
+                ? "table-row" : "none";
+        }
+    }
+
+    function toggleRow(id) {
+        var row = document.getElementById(id);
+        if (row) {
+            row.style.display = (row.style.display === "none" || row.style.display === "")
+                ? "table-row" : "none";
+        }
+    }
+</script>

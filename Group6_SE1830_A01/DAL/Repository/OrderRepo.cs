@@ -52,5 +52,10 @@ namespace DAL.Repository
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Color).FirstOrDefaultAsync(o => o.OrderId == id);
         }
+
+        public async Task<decimal> GetRevenue()
+        {
+            return await _context.Orders.SumAsync(o => o.OrderDetails.Sum(od => od.FinalPrice));
+        }
     }
 }
