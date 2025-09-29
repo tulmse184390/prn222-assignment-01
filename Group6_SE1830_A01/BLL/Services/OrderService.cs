@@ -23,9 +23,35 @@ namespace BLL.Services
             _inventoryRepo = inventoryRepo;
         }
 
+        public async Task CancelExpiredOrders()
+        {
+            var orders = await _orderRepo.GetPendingOrder();
+
+            foreach (var order in orders)
+            {
+                if ((DateTime.Now - order.OrderDate.Value).TotalMinutes > 2)
+                {
+                    order.Status = "Cancelled (ST)";
+                    _orderRepo.Update(order);
+                    await _orderRepo.SaveAsync();
+
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        var car = await _inventoryRepo.GetCar(detail.VersionId, detail.ColorId);
+                        if (car != null)
+                        {
+                            car.Quantity += detail.Quantity;
+                            _inventoryRepo.Update(car);
+                            await _inventoryRepo.SaveAsync();
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task ChangeOrderStatus(ChangeOrderStatus changeOrderStatus)
         {
-            var order = await _orderRepo.GetByIdAsync(changeOrderStatus.OrderId);
+            var order = await _orderRepo.GetOrderById(changeOrderStatus.OrderId);
 
             if (order == null)
             {
@@ -33,6 +59,20 @@ namespace BLL.Services
             }
 
             order.Status = changeOrderStatus.Status;
+            if (changeOrderStatus.Status == "Cancelled")
+            {
+                foreach (var detail in order.OrderDetails)
+                {
+                    var car = await _inventoryRepo.GetCar(detail.VersionId, detail.ColorId);
+                    if (car != null)
+                    {
+                        car.Quantity += detail.Quantity;
+                        _inventoryRepo.Update(car);
+                        await _inventoryRepo.SaveAsync();
+                    }
+                }
+            }
+
             _orderRepo.Update(order);
             await _orderRepo.SaveAsync();
         }
@@ -49,6 +89,11 @@ namespace BLL.Services
 
             foreach (var item in createOrder.CreateOrderDetails)
             {
+                var car = await _inventoryRepo.GetCar(item.VersionId, item.ColorId);
+                if (car == null || car.Quantity < item.Quantity)
+                {
+                    continue;
+                }
                 order.OrderDetails.Add(new OrderDetail
                 {
                     VersionId = item.VersionId,
@@ -57,6 +102,10 @@ namespace BLL.Services
                     UnitPrice = item.UnitPrice,
                     FinalPrice = item.Quantity * item.UnitPrice
                 });
+
+                car.Quantity -= item.Quantity;
+                _inventoryRepo.Update(car);
+                await _inventoryRepo.SaveAsync();
             }
 
             return (await _orderRepo.AddAsync(order)).OrderId;
@@ -64,6 +113,24 @@ namespace BLL.Services
 
         public async Task DeleteOrder(int id)
         {
+            var order = await _orderRepo.GetOrderById(id);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found");
+            }
+
+            foreach (var detail in order.OrderDetails)
+            {
+                var car = await _inventoryRepo.GetCar(detail.VersionId, detail.ColorId);
+                if (car != null)
+                {
+                    car.Quantity += detail.Quantity;
+                    _inventoryRepo.Update(car);
+                    await _inventoryRepo.SaveAsync();
+                }
+            }
+
             await _orderRepo.DeleteOrder(id);
         }
 

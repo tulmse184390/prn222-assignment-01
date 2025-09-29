@@ -17,6 +17,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var customers = await _customerService.GetAllCustomers();
 
             return View(customers);
@@ -24,6 +29,11 @@ namespace WebMVC.Controllers
 
         public IActionResult Create()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             return View();
         }
 
@@ -31,6 +41,11 @@ namespace WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ViewCustomerCreate model)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             if (ModelState.IsValid)
             {
                 await _customerService.CreateCustomer(model);
@@ -44,6 +59,11 @@ namespace WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ViewCustomerEdit model)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             if (ModelState.IsValid)
             {
                 await _customerService.EditCustomer(model);
@@ -55,6 +75,11 @@ namespace WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var result = await _customerService.DeleteCustomer(id);
 
             if (!result)

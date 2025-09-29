@@ -24,6 +24,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var totalInventory = await _inventoryService.GetTotalInventory();
             var totalCustomers = await _customerService.GetTotalCustomers();    
             var totalRevenue = await _orderService.GetRevenue();    
@@ -40,12 +45,22 @@ namespace WebMVC.Controllers
 
         public IActionResult Privacy()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

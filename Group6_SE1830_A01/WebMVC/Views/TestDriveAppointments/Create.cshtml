@@ -8,31 +8,43 @@
     <!-- Cột trái: Form tạo lịch -->
     <div class="left-column">
         <div class="form-container">
-            <h2>➕ Tạo lịch hẹn lái thử</h2>
+            <h2>+ Tạo lịch hẹn lái thử</h2>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="error-box">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
             <form method="post" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label for="CustomerId">Khách hàng</label>
-                    <select id="CustomerId" name="CustomerId" class="form-control">
-                        @foreach (var customer in Model.Customers)
-                        {
-                            <option value="@customer.CustomerId">@customer.FullName</option>
-                        }
-)
+                    <select asp-for="CreateTestDriveAppointment.CustomerId"
+                            class="form-control"
+                            asp-items="@(new SelectList(Model.Customers, "CustomerId", "FullName"))">
                     </select>
                 </div>
 
                 <!-- Hidden để lưu xe được chọn -->
-                <input type="hidden" id="CarVersionId" name="CarVersionId" />
-                <input type="hidden" id="ColorId" name="ColorId" />
+                <input type="hidden" asp-for="CreateTestDriveAppointment.CarVersionId" />
+                <input type="hidden" asp-for="CreateTestDriveAppointment.ColorId" />
 
                 <div class="form-group">
                     <label for="DateTime">Ngày giờ</label>
-                    <input id="DateTime" name="DateTime" type="datetime-local" class="form-control" />
+                    <input asp-for="CreateTestDriveAppointment.DateTime"
+                           type="datetime-local"
+                           class="form-control" />
                 </div>
 
                 <div class="form-group">
                     <label for="Feedback">Ghi chú</label>
-                    <textarea id="Feedback" name="Feedback" class="form-control"></textarea>
+                    <textarea asp-for="CreateTestDriveAppointment.Feedback"
+                              class="form-control"></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit">Lưu lịch hẹn</button>
@@ -61,24 +73,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><input type="radio" name="selectCar" value="1-1" /></td>
-                        <td>VinFast VF 8</td>
-                        <td>Đỏ</td>
-                        <td>3</td>
-                    </tr>
-                    <tr>
-                        <td><input type="radio" name="selectCar" value="2-2" /></td>
-                        <td>VinFast VF 9</td>
-                        <td>Trắng</td>
-                        <td>5</td>
-                    </tr>
-                    <tr>
-                        <td><input type="radio" name="selectCar" value="3-3" /></td>
-                        <td>VinFast VF 6</td>
-                        <td>Đen</td>
-                        <td>2</td>
-                    </tr>
                     @foreach (var car in Model.Inventory)
                     {
                         <tr>
@@ -176,46 +170,78 @@
         .table-cars tr.selected {
             background: #dbeafe;
         }
+
+    .error-box {
+        background: #fee2e2; /* đỏ nhạt */
+        color: #b91c1c; /* đỏ đậm */
+        border: 1px solid #fca5a5; /* viền đỏ */
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+        .error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
 </style>
 
 <script>
-    // Xử lý chọn xe
-    document.querySelectorAll("input[name='selectCar']").forEach(radio => {
-        radio.addEventListener("change", function () {
-            const [carVersionId, colorId] = this.value.split("-");
-            document.getElementById("CarVersionId").value = carVersionId;
-            document.getElementById("ColorId").value = colorId;
+    document.addEventListener("DOMContentLoaded", function() {
 
-            // Highlight dòng đã chọn
-            document.querySelectorAll("#carTable tbody tr").forEach(tr => tr.classList.remove("selected"));
-            this.closest("tr").classList.add("selected");
+        // ===== Reset hoặc tick xe đã chọn =====
+        const selectedCarVersion = document.querySelector("input[name='CreateTestDriveAppointment.CarVersionId']").value;
+        const selectedColor = document.querySelector("input[name='CreateTestDriveAppointment.ColorId']").value;
+
+        document.querySelectorAll("input[name='selectCar']").forEach(radio => {
+            const [versionId, colorId] = radio.value.split("-");
+
+            // Nếu đây là xe đã chọn trước đó -> tick radio và highlight
+            if(versionId === selectedCarVersion && colorId === selectedColor){
+                radio.checked = true;
+                radio.closest("tr").classList.add("selected");
+            }
+
+            // ===== Lắng nghe sự kiện change =====
+            radio.addEventListener("change", function () {
+                const [carVersionId, colorId] = this.value.split("-");
+                document.querySelector("input[name='CreateTestDriveAppointment.CarVersionId']").value = carVersionId;
+                document.querySelector("input[name='CreateTestDriveAppointment.ColorId']").value = colorId;
+
+                // Highlight dòng đã chọn
+                document.querySelectorAll("#carTable tbody tr").forEach(tr => tr.classList.remove("selected"));
+                this.closest("tr").classList.add("selected");
+            });
         });
-    });
 
-        function validateForm() {
-        const carVersionId = document.getElementById("CarVersionId").value;
-        const colorId = document.getElementById("ColorId").value;
-        const dateTime = document.getElementById("DateTime").value;
+        // ===== Validate khi submit =====
+        window.validateForm = function() {
+            const selectedCar = document.querySelector("input[name='selectCar']:checked");
+            const dateTime = document.getElementById("DateTime").value;
 
-        if (!carVersionId || !colorId) {
-            alert("⚠️ Vui lòng chọn xe trước khi lưu lịch hẹn!");
-            return false; // chặn submit
-        }
+            if (!selectedCar) {
+                alert("Vui lòng chọn xe trước khi lưu lịch hẹn!");
+                return false;
+            }
 
-        if (!dateTime) {
-            alert("⚠️ Vui lòng chọn ngày giờ trước khi lưu lịch hẹn!");
-            return false; // chặn submit
-        }
+            if (!dateTime) {
+                alert("Vui lòng chọn ngày giờ trước khi lưu lịch hẹn!");
+                return false;
+            }
 
-        return true; // cho phép submit
-    }
+            return true;
+        };
 
-    // Tìm kiếm xe
-    document.getElementById("searchCar").addEventListener("keyup", function () {
-        const keyword = this.value.toLowerCase();
-        document.querySelectorAll("#carTable tbody tr").forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(keyword) ? "" : "none";
+        // ===== Tìm kiếm xe =====
+        document.getElementById("searchCar").addEventListener("keyup", function () {
+            const keyword = this.value.toLowerCase();
+            document.querySelectorAll("#carTable tbody tr").forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(keyword) ? "" : "none";
+            });
         });
+
     });
 </script>

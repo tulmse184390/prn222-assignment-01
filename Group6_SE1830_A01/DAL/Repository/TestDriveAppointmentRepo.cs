@@ -27,5 +27,19 @@ namespace DAL.Repository
                 .Include(t => t.Color)
                 .ToListAsync();
         }
+
+        public async Task<ICollection<TestDriveAppointment>> GetAppointmentsInDay(DateTime date)
+        {
+            return await _context.TestDriveAppointments
+                .Where(t => t.DateTime.Date == date.Date)
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<TestDriveAppointment>> GetScheduledAppointmentsInDay(DateTime date)
+        {
+            return await _context.TestDriveAppointments
+                .Where(t => t.DateTime.Date == date.Date && t.Status == "Scheduled")
+                .ToListAsync();
+        }
     }
 }

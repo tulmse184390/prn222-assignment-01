@@ -5,6 +5,7 @@ using DAL;
 using DAL.IRepository;
 using DAL.Repository;
 using Microsoft.EntityFrameworkCore;
+using WebMVC.BackgroundWorker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,11 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ITestDriveAppointmentService, TestDriveAppointmentService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+
+builder.Services.AddHostedService<BackgroundServiceWorker>();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -38,6 +44,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 
@@ -47,7 +54,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Staff}/{action=Login}/{id?}")
     .WithStaticAssets();
 
 

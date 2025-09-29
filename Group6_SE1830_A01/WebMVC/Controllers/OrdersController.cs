@@ -1,8 +1,6 @@
 ﻿using BLL.BusinessObjects;
 using BLL.IServices;
-using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace WebMVC.Controllers
 {
@@ -17,6 +15,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewOrders = await _orderService.GetAllOrders();
 
             return View(viewOrders);
@@ -24,6 +27,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Create()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewCreateOrder = await _orderService.GetInfoForCreateOrder();
 
             return View(viewCreateOrder);
@@ -31,6 +39,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Confirm(int id)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewConfirmOrder = await _orderService.GetOrderById(id);
 
             return View(viewConfirmOrder);
@@ -54,9 +67,13 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrder createOrder)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             if (createOrder == null || createOrder.CreateOrderDetails == null || !createOrder.CreateOrderDetails.Any())
             {
-                ModelState.AddModelError("", "Đơn hàng không hợp lệ. Vui lòng chọn ít nhất 1 xe.");
                 var viewCreateOrder = await _orderService.GetInfoForCreateOrder();
                 return View("Create", viewCreateOrder);
             }
@@ -69,6 +86,11 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             await _orderService.DeleteOrder(id); 
             return RedirectToAction("Index");
         }

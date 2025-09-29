@@ -83,7 +83,7 @@ CREATE TABLE Orders (
     CustomerID INT NOT NULL,
     StaffID INT NOT NULL,
     OrderDate DATETIME DEFAULT GETDATE(),
-    Status NVARCHAR(50) CHECK (Status IN ('Pending','Confirmed', 'Cancelled')),
+    Status NVARCHAR(50),
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
     FOREIGN KEY (StaffID) REFERENCES Staffs(StaffID)
 );
@@ -205,4 +205,3 @@ VALUES
 (2, '2025-09-06', N'Chờ khách xác nhận, đặt cọc 50 triệu.', N'Chờ ký'),
 (3, '2025-09-11', N'Hợp đồng hủy do khách hàng từ chối.', N'Đã hủy'),
 (4, '2025-09-16', N'Thanh toán toàn bộ, giao xe trong 30 ngày.', N'Hiệu lực');
-

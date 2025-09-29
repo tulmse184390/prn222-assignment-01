@@ -53,6 +53,17 @@ namespace DAL.Repository
                 .ThenInclude(od => od.Color).FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
+        public async Task<ICollection<Order>> GetPendingOrder()
+        {
+            return await _context.Orders
+                .Where(o => o.Status == "Pending")
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Version)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Color)
+                .ToListAsync();
+        }
+
         public async Task<decimal> GetRevenue()
         {
             return await _context.Orders.SumAsync(o => o.OrderDetails.Sum(od => od.FinalPrice));

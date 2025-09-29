@@ -16,6 +16,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewInventory = await _inventoryService.GetInventory();
 
             return View(viewInventory);
@@ -24,6 +29,11 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAllQuantities(List<UpdateInventoryQuantity> updates)
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             if (updates == null || !updates.Any())
             {
                 return BadRequest("No updates provided.");

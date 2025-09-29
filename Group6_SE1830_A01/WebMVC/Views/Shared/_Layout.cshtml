@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
     Layout = null;
     var title = ViewBag.Title ?? "Dashboard - Quản lý bán xe điện";
     var currentController = ViewContext.RouteData.Values["controller"].ToString();
@@ -176,8 +178,8 @@
         <div class="header">
             <h4>@title</h4>
             <div>
-                Xin chào, Admin |
-                <a href="@Url.Action("Logout", "Account")">Đăng xuất</a>
+                Xin chào, @HttpContextAccessor.HttpContext.Session.GetString("StaffName") |
+                <a href="@Url.Action("Logout", "Staff")">Đăng xuất</a>
             </div>
         </div>
 

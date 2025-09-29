@@ -77,6 +77,13 @@
         }
 
     /* OrderDetail bảng con */
+    .od-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
     .odd-box {
         margin: 12px 0 20px 0;
         padding: 12px;
@@ -165,10 +172,10 @@
 </style>
 
 <div class="od-container">
-    <h2 class="od-title">Danh sách đơn hàng</h2>
-
-    <!-- Nút tạo order mới -->
-    <a href="@Url.Action("Create", "Orders")" class="od-btn-create">+ Tạo Order mới</a>
+    <div class="od-header">
+        <h2 class="od-title">Danh sách đơn hàng</h2>
+        <a href="@Url.Action("Create", "Orders")" class="od-btn-create">+ Tạo Order mới</a>
+    </div>
 
     <!-- Bảng danh sách orders -->
     <table class="od-table">

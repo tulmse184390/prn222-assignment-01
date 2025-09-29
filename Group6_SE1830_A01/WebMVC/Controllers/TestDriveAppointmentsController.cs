@@ -1,7 +1,6 @@
 ﻿using BLL.BusinessObjects;
 using BLL.IServices;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace WebMVC.Controllers
 {
@@ -16,6 +15,11 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewAppointments = await _testDriveAppointmentService.GetAllAppointments();
 
             return View(viewAppointments);
@@ -23,27 +27,86 @@ namespace WebMVC.Controllers
 
         public async Task<IActionResult> Create()
         {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
             var viewCreateAppointment = await _testDriveAppointmentService.GetViewCreateTestDriveAppointment();
             return View(viewCreateAppointment);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateTestDriveAppointment model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ViewCreateTestDriveAppointment model)
         {
-            if (model.CarVersionId == 0 || model.ColorId == 0)
+            if (HttpContext.Session.GetInt32("StaffId") == null)
             {
-                ModelState.AddModelError("", "Vui lòng chọn xe.");
+                return RedirectToAction("Login", "Staff");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var viewCreateAppointment = await _testDriveAppointmentService.GetViewCreateTestDriveAppointment();
+                model.Customers = viewCreateAppointment.Customers;
+                model.Inventory = viewCreateAppointment.Inventory;
                 return View(model);
             }
 
-            if (model.DateTime == default(DateTime))
+            try
             {
-                ModelState.AddModelError("", "Vui lòng chọn ngày giờ.");
+                await _testDriveAppointmentService.CreateTestDriveAppointment(model.CreateTestDriveAppointment);
+                return RedirectToAction("Index");
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("", ex.Message); // lỗi business logic
+                var viewCreateAppointment = await _testDriveAppointmentService.GetViewCreateTestDriveAppointment();
+                model.Customers = viewCreateAppointment.Customers;
+                model.Inventory = viewCreateAppointment.Inventory;
                 return View(model);
             }
+        }
 
-            await _testDriveAppointmentService.CreateTestDriveAppointment(model);
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
+            await _testDriveAppointmentService.DeleteAppointment(id);
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Start(int id)
+        {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
+            await _testDriveAppointmentService.StartAppointment(id);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Complete(int id)
+        {
+            if (HttpContext.Session.GetInt32("StaffId") == null)
+            {
+                return RedirectToAction("Login", "Staff");
+            }
+
+            await _testDriveAppointmentService.CompleteAppointment(id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAppointments()
+        {
+            var viewAppointments = await _testDriveAppointmentService.GetAllAppointments();
+            return Json(viewAppointments);
         }
     }
 }
+

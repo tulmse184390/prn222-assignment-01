@@ -12,5 +12,6 @@ namespace BLL.IServices
         Task<ViewConfirmOrder?> GetOrderById(int id);
         Task DeleteOrder(int id);
         Task<decimal> GetRevenue();
+        Task CancelExpiredOrders();
     }
 }

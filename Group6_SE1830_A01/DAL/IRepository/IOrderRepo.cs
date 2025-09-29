@@ -8,5 +8,6 @@ namespace DAL.IRepository
         Task<Order?> GetOrderById(int id);
         Task DeleteOrder(int id);
         Task<decimal> GetRevenue();
+        Task<ICollection<Order>> GetPendingOrder();
     }
 }

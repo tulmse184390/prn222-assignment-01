@@ -20,87 +20,6 @@
     var nextMonth = firstDay.AddMonths(1);
 }
 
-<div class="oc-container">
-    <div class="header-row">
-        <h2 class="oc-title">📅 Quản lý lịch hẹn lái thử</h2>
-        <a href="@Url.Action("Create", "TestDriveAppointments")" class="btn-create">➕ Tạo lịch hẹn</a>
-    </div>
-
-    <div class="calendar-wrapper">
-        <!-- Lịch -->
-        <div class="calendar-box">
-            <div class="calendar-header">
-                <a class="btn-nav" href="?month=@prevMonth.Month&year=@prevMonth.Year">←</a>
-                <span>@firstDay.ToString("MMMM yyyy")</span>
-                <a class="btn-nav" href="?month=@nextMonth.Month&year=@nextMonth.Year">→</a>
-            </div>
-            <div class="calendar-grid">
-                <div class="day-name">T2</div>
-                <div class="day-name">T3</div>
-                <div class="day-name">T4</div>
-                <div class="day-name">T5</div>
-                <div class="day-name">T6</div>
-                <div class="day-name">T7</div>
-                <div class="day-name">CN</div>
-
-                @for (int i = 1; i < startDayOfWeek; i++)
-                {
-                    <div class="day empty"></div>
-                }
-
-                @for (int day = 1; day <= daysInMonth; day++)
-                {
-                    var currentDate = new DateTime(year, month, day);
-                    var dayEvents = appointments.Where(x => x.DateTime.Date == currentDate.Date).ToList();
-
-                    <div class="day @(currentDate.Date == now.Date ? "today" : "")">
-                        <div class="day-number">@day</div>
-
-                        @if (dayEvents.Any())
-                        {
-                            <ul class="event-list">
-                                @foreach (var ev in dayEvents.Take(2))
-                                {
-                                    <li>@ev.CustomerName</li>
-                                }
-                                @if (dayEvents.Count > 2)
-                                {
-                                    <li>+@((dayEvents.Count - 2)) hẹn</li>
-                                }
-                            </ul>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Danh sách hẹn -->
-        <div class="list-box">
-            <h4>📝 Cuộc hẹn sắp tới</h4>
-            <table class="table-appointments">
-                <thead>
-                    <tr>
-                        <th>Khách</th>
-                        <th>Xe</th>
-                        <th>Ngày giờ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in appointments.OrderBy(x => x.DateTime).Take(10))
-                    {
-                        <tr>
-                            <td>@item.CustomerName</td>
-                            <td>@item.VersionName</td>
-                            <td>@item.DateTime.ToString("dd/MM HH:mm")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-
 <style>
     .oc-container {
         max-width: 1200px;
@@ -237,4 +156,333 @@
             text-align: left;
         }
 
+    .day {
+        position: relative;
+    }
+
+    .day-tooltip {
+        display: none;
+        position: absolute;
+        top: 100%; /* hiện ngay dưới ô ngày */
+        left: 50%;
+        transform: translateX(-50%); /* căn giữa theo ô */
+        z-index: 20;
+        background: #ffffff;
+        border: 1px solid #e5e7eb; /* xám nhạt */
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        padding: 8px 10px;
+        min-width: 160px;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+        .day-tooltip .tooltip-date {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #374151; /* xám đậm */
+            font-size: 13px;
+        }
+
+        .day-tooltip ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .day-tooltip ul li {
+                padding: 2px 0;
+                font-size: 12px;
+                color: #111827; /* đen nhạt */
+            }
+
+    /* Khi hover thì tooltip hiện ra */
+    .day:hover .day-tooltip {
+        display: block;
+    }
+
+    .list-box {
+        flex: 1.3; /* to hơn một chút */
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        padding: 15px;
+        overflow-y: auto;
+        max-height: 650px;
+    }
+
+    .table-appointments {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px; /* chữ to hơn */
+        margin-bottom: 15px;
+    }
+
+        .table-appointments th,
+        .table-appointments td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 8px;
+            text-align: left;
+        }
+
+    .btn-action {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        text-decoration: none;
+        margin-right: 5px;
+        transition: 0.2s;
+        color: white; /* chữ trắng chung */
+    }
+
+    /* Nút Xóa */
+    .btn-delete {
+        background: gray;
+    }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+    /* Nút Bắt đầu */
+    .btn-start {
+        background: #10b981; /* xanh ngọc */
+    }
+
+        .btn-start:hover {
+            background: #059669;
+        }
+
+    /* Nút Kết thúc */
+    .btn-finish {
+        background: #f59e0b; /* vàng cam */
+    }
+
+        .btn-finish:hover {
+            background: #d97706;
+        }
 </style>
+
+<div class="oc-container">
+    <div class="header-row">
+        <h2 class="oc-title">📅 Quản lý lịch hẹn lái thử</h2>
+        <a href="@Url.Action("Create", "TestDriveAppointments")" class="btn-create">+ Tạo lịch hẹn</a>
+    </div>
+
+    <div class="calendar-wrapper">
+        <!-- Lịch -->
+        <div class="calendar-box">
+            <div class="calendar-header">
+                <a class="btn-nav" href="?month=@prevMonth.Month&year=@prevMonth.Year">←</a>
+                <span>@firstDay.ToString("MMMM yyyy")</span>
+                <a class="btn-nav" href="?month=@nextMonth.Month&year=@nextMonth.Year">→</a>
+            </div>
+            <div class="calendar-grid">
+                <div class="day-name">T2</div>
+                <div class="day-name">T3</div>
+                <div class="day-name">T4</div>
+                <div class="day-name">T5</div>
+                <div class="day-name">T6</div>
+                <div class="day-name">T7</div>
+                <div class="day-name">CN</div>
+
+                @for (int i = 1; i < startDayOfWeek; i++)
+                {
+                    <div class="day empty"></div>
+                }
+
+                @for (int day = 1; day <= daysInMonth; day++)
+                {
+                    var currentDate = new DateTime(year, month, day);
+                    var dayEvents = appointments.Where(x => x.DateTime.Date == currentDate.Date).ToList();
+
+                    <div class="day @(currentDate.Date == now.Date ? "today" : "")">
+                        <div class="day-number">@day</div>
+
+                        @if (dayEvents.Any())
+                        {
+                            <ul class="event-list">
+                                @foreach (var ev in dayEvents.Take(2))
+                                {
+                                    <li>@ev.CustomerName</li>
+                                }
+                                @if (dayEvents.Count > 2)
+                                {
+                                    <li>+@((dayEvents.Count - 2)) hẹn</li>
+                                }
+                            </ul>
+
+                            <div class="day-tooltip">
+                                <strong>@currentDate.ToString("dd/MM/yyyy")</strong>
+                                <ul>
+                                    @foreach (var ev in dayEvents)
+                                    {
+                                        <li>@ev.CustomerName - @ev.DateTime.ToString("HH:mm")</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Danh sách hẹn -->
+        <div class="list-box" id="appointments-container">
+            <h4>📝 Cuộc hẹn sắp tới</h4>
+
+            @{
+                var today = DateTime.Today;
+                var groups = new Dictionary<string, List<BLL.BusinessObjects.ViewTestDriveAppointment>> {
+                        { "📌 Hôm nay (" + today.ToString("dd/MM") + ")", appointments.Where(x => x.DateTime.Date == today).OrderBy(x => x.DateTime).ToList() },
+                        { "📌 Ngày mai (" + today.AddDays(1).ToString("dd/MM") + ")", appointments.Where(x => x.DateTime.Date == today.AddDays(1)).OrderBy(x => x.DateTime).ToList() },
+                        { "📌 Ngày mốt (" + today.AddDays(2).ToString("dd/MM") + ")", appointments.Where(x => x.DateTime.Date == today.AddDays(2)).OrderBy(x => x.DateTime).ToList() }
+                        };
+            }
+
+            @foreach (var group in groups)
+            {
+                <h5>@group.Key</h5>
+                @if (group.Value.Any())
+                {
+                    <table class="table-appointments">
+                        <thead>
+                            <tr>
+                                <th>Khách</th>
+                                <th>Xe</th>
+                                <th>Giờ</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in group.Value)
+                            {
+                                <tr>
+                                    <td>@item.CustomerName</td>
+                                    <td>@item.VersionName</td>
+                                    <td>@item.DateTime.ToString("HH:mm")</td>
+                                    <td>@item.Status</td>
+                                    <td>
+                                        @if (item.Status == "Waiting")
+                                        {
+                                            <a href="@Url.Action("Start", "TestDriveAppointments", new { id = item.AppointmentID })"
+                                               class="btn-action btn-start">▶️</a>
+                                            <a href="@Url.Action("Delete", "TestDriveAppointments", new { id = item.AppointmentID })"
+                                               class="btn-action btn-delete"
+                                               onclick="return confirm('Bạn có chắc muốn xóa lịch hẹn này?');">🗑️</a>
+                                        }
+                                        else if (item.Status == "Driving")
+                                        {
+                                            <a href="@Url.Action("Complete", "TestDriveAppointments", new { id = item.AppointmentID })"
+                                               class="btn-action btn-finish">⏹</a>
+                                        }
+                                        else if (item.Status == "Scheduled" || item.Status == "No Show")
+                                        {
+                                            <a href="@Url.Action("Delete", "TestDriveAppointments", new { id = item.AppointmentID })"
+                                               class="btn-action btn-delete"
+                                               onclick="return confirm('Bạn có chắc muốn xóa lịch hẹn này?');">🗑️</a>
+                                        }
+                                        else if (item.Status == "Done")
+                                        {
+                                            <!-- Không hiện gì -->
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="no-appointment">Không có lịch hẹn</p>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadAppointments() {
+        try {
+            let res = await fetch('/TestDriveAppointments/GetAppointments');
+            let data = await res.json();
+
+            // Nhóm lịch hẹn: Hôm nay, Ngày mai, Ngày mốt
+            let today = new Date();
+            let groups = {
+                ["📌 Hôm nay (" + today.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + ")"]:
+                    data.filter(x => new Date(x.dateTime).toDateString() === today.toDateString()),
+
+                ["📌 Ngày mai (" + new Date(today.getTime() + 86400000).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + ")"]:
+                    data.filter(x => new Date(x.dateTime).toDateString() === new Date(today.getTime() + 86400000).toDateString()),
+
+                ["📌 Ngày mốt (" + new Date(today.getTime() + 2 * 86400000).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + ")"]:
+                    data.filter(x => new Date(x.dateTime).toDateString() === new Date(today.getTime() + 2 * 86400000).toDateString())
+            };
+
+            // Render HTML lại
+            let html = "<h4>📝 Cuộc hẹn sắp tới</h4>";
+            for (let key in groups) {
+                let items = groups[key];
+                html += `<h5>${key}</h5>`;
+                if (items.length > 0) {
+                    html += `
+                        <table class="table-appointments">
+                            <thead>
+                                <tr>
+                                    <th>Khách</th>
+                                    <th>Xe</th>
+                                    <th>Giờ</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    items.forEach(item => {
+                        let time = new Date(item.dateTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                        html += `
+                            <tr>
+                                <td>${item.customerName}</td>
+                                <td>${item.versionName}</td>
+                                <td>${time}</td>
+                                <td>${item.status}</td>
+                                <td>`;
+
+                        // Logic hành động giống Razor
+                        if (item.status === "Waiting") {
+                            html += `
+                                <a href="/TestDriveAppointments/Start/${item.appointmentID}" class="btn-action btn-start">▶️</a>
+                                <a href="/TestDriveAppointments/Delete/${item.appointmentID}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc muốn xóa lịch hẹn này?');">🗑️</a>`;
+                        } else if (item.status === "Driving") {
+                            html += `
+                                <a href="/TestDriveAppointments/Complete/${item.appointmentID}" class="btn-action btn-finish">⏹</a>`;
+                        } else if (item.status === "Scheduled" || item.status === "No Show") {
+                            html += `
+                                <a href="/TestDriveAppointments/Delete/${item.appointmentID}" class="btn-action btn-delete" onclick="return confirm('Bạn có chắc muốn xóa lịch hẹn này?');">🗑️</a>`;
+                        }
+                        // Done thì không hiện gì
+
+                        html += `</td>
+                            </tr>`;
+                    });
+                    html += `</tbody></table>`;
+                } else {
+                    html += `<p class="no-appointment">Không có lịch hẹn</p>`;
+                }
+            }
+
+            document.getElementById("appointments-container").innerHTML = html;
+
+        } catch (e) {
+            console.error("Lỗi khi tải lịch hẹn:", e);
+        }
+    }
+
+    // Gọi ngay khi load trang
+    loadAppointments();
+
+    // Cập nhật lại mỗi 30 giây
+    setInterval(loadAppointments, 30000);
+</script>

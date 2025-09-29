@@ -12,5 +12,10 @@ namespace DAL.Repository
         {
             _context = context;
         }
+
+        public async Task<Staff?> GetStaffByEmail(string email)
+        {
+            return await _context.Staffs.FirstOrDefaultAsync(s => s.Email.ToLower() == email.ToLower());
+        }
     }
 }

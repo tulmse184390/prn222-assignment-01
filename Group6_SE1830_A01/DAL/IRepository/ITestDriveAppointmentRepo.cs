@@ -6,5 +6,7 @@ namespace DAL.IRepository
     {
         Task<ICollection<TestDriveAppointment>> GetAllApointments();
         Task DeleteTestDriveAppointments(ICollection<TestDriveAppointment> testDriveAppointments);
+        Task<ICollection<TestDriveAppointment>> GetAppointmentsInDay(DateTime date);
+        Task<ICollection<TestDriveAppointment>> GetScheduledAppointmentsInDay(DateTime date);
     }
 }

@@ -45,6 +45,8 @@ namespace BLL.Mappings
             CreateMap<ViewCustomerCreate, Customer>();
 
             CreateMap<ViewCustomerEdit, Customer>();
+
+            CreateMap<Staff, StaffInfo>();
         }
     }
 }
