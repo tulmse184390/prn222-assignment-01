@@ -66,7 +66,7 @@ namespace DAL.Repository
 
         public async Task<decimal> GetRevenue()
         {
-            return await _context.Orders.SumAsync(o => o.OrderDetails.Sum(od => od.FinalPrice));
+            return await _context.Orders.Where(o => o.Status == "Confirmed").SumAsync(o => o.OrderDetails.Sum(od => od.FinalPrice));
         }
     }
 }

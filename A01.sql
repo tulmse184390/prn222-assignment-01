@@ -163,23 +163,26 @@ VALUES
 --Staff 
 INSERT INTO Staffs (Email, Password, FullName, Phone, DealerID)
 VALUES
-('admin@vinfast.com', '123456', N'Nguyễn Văn A', '0912345678', 1),
-('sales1@vinfast.com', '123456', N'Trần Thị B', '0987654321', 1),
-('sales2@vinfast.com', '123456', N'Lê Văn C', '0977123456', 2);
+('admin@vinfast.com', '123456', N'Nguyễn Văn Tùng', '0912345678', 1),
+('sales1@vinfast.com', '123456', N'Trần Thị Hoa', '0987654321', 1),
+('sales2@vinfast.com', '123456', N'Lê Văn Cường', '0923423456', 2),
+('sales3@vinfast.com', '123456', N'Phạm Nhật Minh', '0943223456', 2),
+('sales4@vinfast.com', '123456', N'Lê Toàn', '0977678456', 2),
+('sales5@vinfast.com', '123456', N'Trần Nhật Nam', '0678123456', 2);
 
 --Customer 
-INSERT INTO Customers (FullName, Phone, Email, Address, IDNumber, DOB, Note)
+INSERT INTO Customers (FullName, Phone, Email, Address, IDNumber, DOB)
 VALUES
-(N'Phạm Minh Đức', '0911111111', 'ducpham@gmail.com', N'123 Lê Lợi, Hà Nội', '012345678901', '1990-05-12', N'Khách VIP'),
-(N'Ngô Thị Hoa', '0922222222', 'hoa.ngo@yahoo.com', N'45 Trần Hưng Đạo, Đà Nẵng', '123456789012', '1985-08-25', N'Ưu tiên giao cuối tuần'),
-(N'Hoàng Văn Nam', '0933333333', 'namhv@outlook.com', N'78 Nguyễn Huệ, TP.HCM', '234567890123', '1992-02-10', N'Khách hàng mới'),
-(N'Lê Thị Mai', '0944444444', 'lemai@gmail.com', N'12 Pasteur, Hải Phòng', '345678901234', '1995-11-20', NULL);
+(N'Phạm Minh Đức', '0911111111', 'ducpham@gmail.com', N'123 Lê Lợi, Hà Nội', '012345678901', '1990-05-12'),
+(N'Ngô Thị Hoa', '0922222222', 'hoa.ngo@yahoo.com', N'45 Trần Hưng Đạo, Đà Nẵng', '123456789012', '1985-08-25'),
+(N'Hoàng Văn Nam', '0933333333', 'namhv@outlook.com', N'78 Nguyễn Huệ, TP.HCM', '234567890123', '1992-02-10'),
+(N'Lê Thị Mai', '0944444444', 'lemai@gmail.com', N'12 Pasteur, Hải Phòng', '345678901234', '1995-11-20');
 
 --Orders
 INSERT INTO Orders (CustomerID, StaffID, OrderDate, Status)
 VALUES
 (1, 2, '2025-09-01', 'Confirmed'),
-(2, 2, '2025-09-05', 'Pending'),
+(2, 2, '2025-09-05', 'Confirmed'),
 (3, 3, '2025-09-10', 'Cancelled'),
 (4, 1, '2025-09-15', 'Confirmed');
 
@@ -198,10 +201,3 @@ VALUES
 -- Order 4: Khách 4 mua VF 8 Plus (trắng ngọc trai) số lượng 1
 (4, 3, 6, 1, 1250000000, 20000000, 1240000000);
 
---Contracts
-INSERT INTO Contracts (OrderID, ContractDate, Terms, Status)
-VALUES
-(1, '2025-09-02', N'Thanh toán trong vòng 7 ngày, bảo hành 10 năm pin.', N'Hiệu lực'),
-(2, '2025-09-06', N'Chờ khách xác nhận, đặt cọc 50 triệu.', N'Chờ ký'),
-(3, '2025-09-11', N'Hợp đồng hủy do khách hàng từ chối.', N'Đã hủy'),
-(4, '2025-09-16', N'Thanh toán toàn bộ, giao xe trong 30 ngày.', N'Hiệu lực');

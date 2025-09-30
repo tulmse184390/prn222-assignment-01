@@ -3,7 +3,6 @@
     ViewBag.Title = "Quản lý lịch hẹn lái thử";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    // Lấy tham số month, year từ query
     var now = DateTime.Now;
     int month = Context.Request.Query["month"].Count > 0 ? int.Parse(Context.Request.Query["month"]) : now.Month;
     int year = Context.Request.Query["year"].Count > 0 ? int.Parse(Context.Request.Query["year"]) : now.Year;
@@ -11,11 +10,10 @@
     var firstDay = new DateTime(year, month, 1);
     var daysInMonth = DateTime.DaysInMonth(year, month);
     var startDayOfWeek = (int)firstDay.DayOfWeek;
-    if (startDayOfWeek == 0) startDayOfWeek = 7; // Chủ nhật = 7
+    if (startDayOfWeek == 0) startDayOfWeek = 7;
 
     var appointments = Model ?? Enumerable.Empty<BLL.BusinessObjects.ViewTestDriveAppointment>();
 
-    // Tính tháng trước và tháng sau
     var prevMonth = firstDay.AddMonths(-1);
     var nextMonth = firstDay.AddMonths(1);
 }

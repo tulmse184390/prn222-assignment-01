@@ -53,12 +53,10 @@
         </div>
     </div>
 
-    <!-- Cột phải: Danh sách xe -->
     <div class="right-column">
         <div class="car-list">
             <h3>🚗 Xe có sẵn (chọn 1 xe)</h3>
 
-            <!-- Thanh tìm kiếm -->
             <div class="form-group">
                 <input type="text" id="searchCar" class="form-control" placeholder="🔍 Tìm xe theo tên hoặc màu..." />
             </div>
@@ -191,32 +189,27 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 
-        // ===== Reset hoặc tick xe đã chọn =====
         const selectedCarVersion = document.querySelector("input[name='CreateTestDriveAppointment.CarVersionId']").value;
         const selectedColor = document.querySelector("input[name='CreateTestDriveAppointment.ColorId']").value;
 
         document.querySelectorAll("input[name='selectCar']").forEach(radio => {
             const [versionId, colorId] = radio.value.split("-");
 
-            // Nếu đây là xe đã chọn trước đó -> tick radio và highlight
             if(versionId === selectedCarVersion && colorId === selectedColor){
                 radio.checked = true;
                 radio.closest("tr").classList.add("selected");
             }
 
-            // ===== Lắng nghe sự kiện change =====
             radio.addEventListener("change", function () {
                 const [carVersionId, colorId] = this.value.split("-");
                 document.querySelector("input[name='CreateTestDriveAppointment.CarVersionId']").value = carVersionId;
                 document.querySelector("input[name='CreateTestDriveAppointment.ColorId']").value = colorId;
 
-                // Highlight dòng đã chọn
                 document.querySelectorAll("#carTable tbody tr").forEach(tr => tr.classList.remove("selected"));
                 this.closest("tr").classList.add("selected");
             });
         });
 
-        // ===== Validate khi submit =====
         window.validateForm = function() {
             const selectedCar = document.querySelector("input[name='selectCar']:checked");
             const dateTime = document.getElementById("DateTime").value;
@@ -234,7 +227,6 @@
             return true;
         };
 
-        // ===== Tìm kiếm xe =====
         document.getElementById("searchCar").addEventListener("keyup", function () {
             const keyword = this.value.toLowerCase();
             document.querySelectorAll("#carTable tbody tr").forEach(row => {
