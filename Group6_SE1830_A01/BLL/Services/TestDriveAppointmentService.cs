@@ -27,7 +27,7 @@ namespace BLL.Services
 
             foreach (var appointment in appointments)
             {
-                if ((DateTime.Now - appointment.DateTime).TotalMinutes > 30 && appointment.Status == "Waiting")
+                if ((DateTime.Now - appointment.DateTime).TotalMinutes > 3 && appointment.Status == "Waiting")
                 {
                     appointment.Status = "No Show";
                     _testDriveAppointmentRepo.Update(appointment);
@@ -37,7 +37,7 @@ namespace BLL.Services
                     appointment.Status = "Waiting";
                     _testDriveAppointmentRepo.Update(appointment);
                 }
-                else if ((DateTime.Now - appointment.DateTime).TotalMinutes > 30 && appointment.Status == "Driving")
+                else if ((DateTime.Now - appointment.DateTime).TotalMinutes > 3 && appointment.Status == "Driving")
                 {
                     appointment.Status = "Done";
                     _testDriveAppointmentRepo.Update(appointment);

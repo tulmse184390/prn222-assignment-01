@@ -1,6 +1,7 @@
 ﻿using BLL.BusinessObjects;
 using BLL.IServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace WebMVC.Controllers
 {
@@ -106,6 +107,21 @@ namespace WebMVC.Controllers
         {
             var viewAppointments = await _testDriveAppointmentService.GetAllAppointments();
             return Json(viewAppointments);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAppointmentsPartial()
+        {
+            var viewAppointments = await _testDriveAppointmentService.GetAllAppointments();
+
+            var today = DateTime.Today;
+            var groups = new Dictionary<string, List<ViewTestDriveAppointment>> {
+        { "📌 Hôm nay (" + today.ToString("dd/MM") + ")", viewAppointments.Where(x => x.DateTime.Date == today).OrderBy(x => x.DateTime).ToList() },
+        { "📌 Ngày mai (" + today.AddDays(1).ToString("dd/MM") + ")", viewAppointments.Where(x => x.DateTime.Date == today.AddDays(1)).OrderBy(x => x.DateTime).ToList() },
+        { "📌 Ngày mốt (" + today.AddDays(2).ToString("dd/MM") + ")", viewAppointments.Where(x => x.DateTime.Date == today.AddDays(2)).OrderBy(x => x.DateTime).ToList() }
+    };
+
+            return PartialView("_AppointmentsList", groups);
         }
     }
 }

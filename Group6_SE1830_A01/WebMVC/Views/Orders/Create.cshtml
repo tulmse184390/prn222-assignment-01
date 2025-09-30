@@ -183,12 +183,10 @@
 </style>
 
 <div class="co-wrapper">
-    <!-- Form tạo đơn hàng -->
     <div>
         <h2 class="co-title">Tạo đơn hàng mới</h2>
 
         <form class="co-form" method="post" action="@Url.Action("CreateOrder", "Orders")" id="orderForm">
-            <!-- Chọn nhân viên -->
             <div class="co-group">
                 <label class="co-label">Nhân viên thực hiện</label>
                 <select class="co-select" name="StaffId">
@@ -199,7 +197,6 @@
                 </select>
             </div>
 
-            <!-- Chọn khách hàng -->
             <div class="co-group">
                 <label class="co-label">Khách hàng</label>
                 <select class="co-select" name="CustomerId">
@@ -225,18 +222,15 @@
                 <tbody></tbody>
             </table>
 
-            <!-- Tổng tiền -->
             <div class="co-total" id="grandTotal">Tổng tiền: 0</div>
 
             <input type="hidden" name="OrderItemsJson" id="OrderItemsJson">
 
-            <!-- Action buttons -->
             <button type="submit" class="co-btn co-btn-save">💾 Lưu Order</button>
             <a href="@Url.Action("Index", "Orders")" class="co-btn co-btn-cancel">✖ Hủy</a>
         </form>
     </div>
 
-    <!-- Danh sách xe tồn kho -->
     <div class="co-inventory">
         <h3>Xe tồn kho</h3>
         <div class="inv-search">

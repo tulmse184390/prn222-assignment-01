@@ -76,7 +76,6 @@
             background: #15803d;
         }
 
-    /* OrderDetail bảng con */
     .od-header {
         display: flex;
         justify-content: space-between;
@@ -130,7 +129,6 @@
         gap: 6px;
     }
 
-    /* Nút nhỏ gọn chung */
     .od-btn {
         border: none;
         background: #e2e8f0;
@@ -177,7 +175,6 @@
         <a href="@Url.Action("Create", "Orders")" class="od-btn-create">+ Tạo Order mới</a>
     </div>
 
-    <!-- Bảng danh sách orders -->
     <table class="od-table">
         <thead>
             <tr>
@@ -202,7 +199,6 @@
                     <td>@item.Status</td>
                     <td>@item.TotalAmount.ToString("N0") ₫</td>
                     <td class="od-actions">
-                        <!-- Nút xem chi tiết -->
                         <button type="button" class="od-btn od-btn-detail" onclick="toggleDetail('detail-@item.OrderId')" title="Xem chi tiết">
                             🔍
                         </button>
