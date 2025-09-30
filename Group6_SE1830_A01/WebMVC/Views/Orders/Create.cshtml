@@ -260,7 +260,7 @@
 </div>
 
 <script>
-            function addFromInventory(btn) {
+    function addFromInventory(btn) {
         const item = btn.closest(".inv-item");
         const name = item.dataset.name;
         const version = item.dataset.version;
@@ -284,7 +284,7 @@
             qtyInput.value = newQty;
             updateRowTotal(row, price, stock);
         } else {
-            const index = tbody.querySelectorAll("tr").length; // lấy index cho OrderItems[i]
+            const index = tbody.querySelectorAll("tr").length;
             row = document.createElement("tr");
             row.dataset.name = name;
             row.dataset.stock = stock;
@@ -305,7 +305,7 @@
                     ${price.toLocaleString()}
                     <input type="hidden" name="CreateOrderDetails[${index}].UnitPrice" value="${price}">
                 </td>
-                <td class="row-total">${price.toLocaleString()}</td>
+                <td class="row-total" data-total="${price}">${price.toLocaleString()}</td>
                 <td>
                     <input type="hidden" name="CreateOrderDetails[${index}].VersionId" value="${versionId}">
                     <input type="hidden" name="CreateOrderDetails[${index}].ColorId" value="${colorId}">
@@ -318,22 +318,25 @@
         updateGrandTotal();
     }
 
-        function updateRowTotal(row, price, stock) {
+    function updateRowTotal(row, price, stock) {
         let qtyInput = row.querySelector(".order-qty");
         let qty = parseInt(qtyInput.value);
 
-        // ép số lượng hợp lệ
         if (isNaN(qty) || qty < 1) qty = 1;
         if (qty > stock) qty = stock;
 
         qtyInput.value = qty;
-        row.querySelector(".row-total").innerText = (qty * price).toLocaleString();
+
+        let total = qty * price;
+        let totalCell = row.querySelector(".row-total");
+        totalCell.innerText = total.toLocaleString();
+        totalCell.dataset.total = total;
+
         updateGrandTotal();
     }
 
-    function removeRow(btn, name, price) {
+    function removeRow(btn) {
         const row = btn.closest("tr");
-        const qty = parseInt(row.querySelector(".order-qty").value);
         row.remove();
 
         reindexOrderItems();
@@ -342,13 +345,13 @@
 
     function updateGrandTotal() {
         let total = 0;
-        document.querySelectorAll("#orderTable tbody tr").forEach(row => {
-            total += parseInt(row.querySelector(".row-total").innerText.replace(/,/g, ""));
+        document.querySelectorAll("#orderTable tbody tr .row-total").forEach(cell => {
+            total += parseInt(cell.dataset.total || "0");
         });
         document.getElementById("grandTotal").innerText = "Tổng tiền: " + total.toLocaleString();
     }
 
-        function reindexOrderItems() {
+    function reindexOrderItems() {
         const rows = document.querySelectorAll("#orderTable tbody tr");
         rows.forEach((row, i) => {
             row.querySelectorAll("input, select").forEach(input => {
@@ -360,7 +363,6 @@
         });
     }
 
-    // Tìm kiếm
     document.getElementById("searchBox").addEventListener("input", function() {
         const keyword = this.value.toLowerCase();
         document.querySelectorAll(".inv-item").forEach(item => {

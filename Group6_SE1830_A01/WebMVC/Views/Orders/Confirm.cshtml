@@ -123,7 +123,6 @@
         </div>
     </div>
 
-    <!-- Chi tiết xe -->
     <div class="oc-panel">
         <h3>Chi tiết xe</h3>
         <table class="oc-table">
@@ -152,25 +151,20 @@
         <div class="oc-total">Tổng tiền: @Model.TotalAmount.ToString("N0")</div>
     </div>
 
-    <!-- Nút thao tác -->
     @if (Model.Status == "Pending")
     {
         <div class="oc-actions">
-        <!-- Nút Thanh toán (Confirm) -->
             <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
             <input type="hidden" name="OrderId" value="@Model.OrderId" />
             <input type="hidden" name="Status" value="Confirmed" />
             <button type="submit" class="oc-btn oc-btn-pay">💳 Thanh toán</button>
         </form>
-
-        <!-- Nút Hủy -->
             <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
             <input type="hidden" name="OrderId" value="@Model.OrderId" />
             <input type="hidden" name="Status" value="Cancelled" />
             <button type="submit" class="oc-btn oc-btn-cancel">  Hủy</button>
         </form>
 
-            <!-- Nút Xóa -->
             <form asp-action="Delete" asp-controller="Orders" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
                 <input type="hidden" name="id" value="@Model.OrderId" />
                 <button type="submit" class="oc-btn oc-btn-cancel">🗑 Xóa</button>
@@ -190,7 +184,7 @@
                     : "Bạn có chắc chắn muốn hủy đơn hàng này không?";
 
                 if (!confirm(message)) {
-                    e.preventDefault(); // chặn submit nếu bấm Cancel
+                    e.preventDefault();
                 }
             });
         });
