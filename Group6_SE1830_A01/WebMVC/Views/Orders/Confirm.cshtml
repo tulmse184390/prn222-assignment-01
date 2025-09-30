@@ -154,12 +154,14 @@
     @if (Model.Status == "Pending")
     {
         <div class="oc-actions">
-            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
+            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này không?');">
             <input type="hidden" name="OrderId" value="@Model.OrderId" />
             <input type="hidden" name="Status" value="Confirmed" />
             <button type="submit" class="oc-btn oc-btn-pay">💳 Thanh toán</button>
         </form>
-            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form">
+            <form asp-action="ChangeStatus" asp-controller="Orders" method="post" style="display:inline;" class="change-status-form"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
             <input type="hidden" name="OrderId" value="@Model.OrderId" />
             <input type="hidden" name="Status" value="Cancelled" />
             <button type="submit" class="oc-btn oc-btn-cancel">  Hủy</button>
@@ -172,21 +174,3 @@
     </div>
     }
 </div>
-
-<script>
-            document.addEventListener("DOMContentLoaded", function () {
-        const forms = document.querySelectorAll(".change-status-form");
-        forms.forEach(form => {
-            form.addEventListener("submit", function (e) {
-                const status = form.getAttribute("data-status");
-                let message = status === "Confirmed"
-                    ? "Bạn có chắc chắn muốn xác nhận đơn hàng này không?"
-                    : "Bạn có chắc chắn muốn hủy đơn hàng này không?";
-
-                if (!confirm(message)) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
-</script>
